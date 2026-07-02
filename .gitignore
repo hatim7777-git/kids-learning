@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor configurations
+.vscode/
+.idea/
+
+# Local logs
+*.log
+
+# Ignore Clasp credentials and local login tokens
+.clasp.json
+.clasprc.json
+clasp.json
+
+# Excel local backups (if you don't want the spreadsheet file in git)
+*.xlsx
+
+version.txt
+deploy.bat
+git_push.bat
