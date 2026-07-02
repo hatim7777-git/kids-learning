@@ -71,9 +71,7 @@
             min-height: 120px;
         }
 
-        .card:active {
-            transform: scale(0.95);
-        }
+        .card:active { transform: scale(0.95); }
 
         .char {
             font-size: 3.5rem;
@@ -89,9 +87,37 @@
         }
 
         .card.reveal .subtext { display: block; }
-        .card.reveal .char { font-size: 2.5rem; }
+        .card.reveal .char { font-size: 3.5rem; }
 
         .hidden { display: none !important; }
+
+        #details-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 650px;
+        }
+
+        #details-display img {
+            max-height: 160px;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+
+        .example-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -105,13 +131,21 @@
         <button id="num-mode-btn" class="mode-btn" onclick="switchMode('num')">🔢 123s</button>
     </div>
 
-    <main class="container-fluid">
+    <!-- Active Detail Panel -->
+    <div id="details-display" class="hidden">
+        <img id="finger-image" src="" alt="Fingers count">
+        <div class="example-display">
+            <img id="example-image" src="" alt="Example visualization">
+            <p id="example-text" class="m-0"></p>
+        </div>
+    </div>
+
+    <main class="container-fluid mb-4">
         <div id="abc-container" class="container"></div>
         <div id="num-container" class="container hidden"></div>
     </main>
 
     <script>
-        // Note: Bootstrap JS is not included as it's not required for the current functionality.
         const alphabetData = [
             {id: 'A', word: 'Apple', emoji: '🍎', color: '#FF3D00'},
             {id: 'B', word: 'Ball', emoji: '⚽', color: '#0476D0'},
@@ -137,54 +171,72 @@
             {id: 'V', word: 'Violin', emoji: '🎻', color: '#8D6E63'},
             {id: 'W', word: 'Watermelon', emoji: '🍉', color: '#2E7D32'},
             {id: 'X', word: 'Xylophone', emoji: '🪵', color: '#006064'},
-            {id: 'Y', word: 'Yo-yo', emoji: '🪀', color: '#F50057'},
+            {id: 'Y', word: 'Yo-yo', emoji: 'and', color: '#F50057'},
             {id: 'Z', word: 'Zebra', emoji: '🦓', color: '#212121'}
         ];
 
         const numberData = [
-            {id: '1', word: 'One Sun', emoji: '☀️', color: '#FF5722'},
-            {id: '2', word: 'Two Eyes', emoji: '👀', color: '#2196F3'},
-            {id: '3', word: 'Three Birds', emoji: '🦜', color: '#4CAF50'},
-            {id: '4', word: 'Four Cars', emoji: '🚗', color: '#FF9800'},
-            {id: '5', word: 'Five Balloons', emoji: '🎈', color: '#9C27B0'},
-            {id: '6', word: 'Six Cakes', emoji: '🍰', color: '#E91E63'},
-            {id: '7', word: 'Seven Stars', emoji: '⭐', color: '#FFEB3B'},
-            {id: '8', word: 'Eight Fish', emoji: '🐟', color: '#00BCD4'},
-            {id: '9', word: 'Nine Flowers', emoji: '💐', color: '#8BC34A'},
-            {id: '10', word: 'Ten Pennies', emoji: '🪙', color: '#795548'}
+            {id: '1', word: 'One', fingerImg: 'images/f1.png', examples: [{text: '☀️ One Sun', image: 'images/ex1.png'}], color: '#FF5722'},
+            {id: '2', word: 'Two', fingerImg: 'images/f2.png', examples: [{text: '👀 Two Eyes', image: 'images/ex2.png'}], color: '#2196F3'},
+            {id: '3', word: 'Three', fingerImg: 'images/f3.png', examples: [{text: '🚦 Three Lights', image: 'images/ex3.png'}], color: '#4CAF50'},
+            {id: '4', word: 'Four', fingerImg: 'images/f4.png', examples: [{text: '🚗 Four Wheels', image: 'images/ex4.png'}], color: '#FF9800'},
+            {id: '5', word: 'Five', fingerImg: 'images/f5.png', examples: [{text: '⭐ Five Points', image: 'images/ex5.png'}], color: '#9C27B0'},
+            {id: '6', word: 'Six', fingerImg: 'images/f6.png', examples: [{text: '🐞 Six Legs', image: 'images/ex6.png'}], color: '#E91E63'},
+            {id: '7', word: 'Seven', fingerImg: 'images/f7.png', examples: [{text: '🌈 7 Colors', image: 'images/ex7.png'}], color: '#FFEB3B'},
+            {id: '8', word: 'Eight', fingerImg: 'images/f8.png', examples: [{text: '🐙 Eight Arms', image: 'images/ex8.png'}], color: '#00BCD4'},
+            {id: '9', word: 'Nine', fingerImg: 'images/f9.png', examples: [{text: '🐈 Nine Lives', image: 'images/ex9.png'}], color: '#8BC34A'},
+            {id: '10', word: 'Ten', fingerImg: 'images/f10.png', examples: [{text: '🖐️🖐️ Ten Fingers', image: 'images/ex10.png'}], color: '#795548'}
         ];
+
+        const detailsDisplay = document.getElementById('details-display');
+        const fingerImage = document.getElementById('finger-image');
+        const exampleImage = document.getElementById('example-image');
+        const exampleText = document.getElementById('example-text');
 
         function createGrid(data, containerId, isNumbers = false) {
             const container = document.getElementById(containerId);
+            container.innerHTML = ''; 
+
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.style.borderTop = `8px solid ${item.color}`;
+                card.dataset.exampleIndex = 0; 
                 
                 const charEl = document.createElement('p');
                 charEl.className = 'char';
                 charEl.style.color = item.color;
                 charEl.innerText = item.id;
 
-                const subEl = document.createElement('p');
-                subEl.className = 'subtext';
-                subEl.innerText = `${item.emoji} ${item.word}`;
-
                 card.appendChild(charEl);
-                card.appendChild(subEl);
 
-                // Touch/Click Event
                 card.addEventListener('click', () => {
-                    // Reset all other cards in this container
-                    container.querySelectorAll('.card').forEach(c => {
-                        if(c !== card) c.classList.remove('reveal');
-                    });
-                    
-                    // Toggle current card
-                    card.classList.toggle('reveal');
-                    
-                    // Voice Synth Speak
-                    speakText(isNumbers ? `${item.id}... ${item.word}` : `${item.id}... for ${item.word}`);
+                    let textToSpeak = '';
+                    if (isNumbers) {
+                        detailsDisplay.classList.remove('hidden');
+
+                        const exampleIndex = parseInt(card.dataset.exampleIndex);
+                        const currentExample = item.examples[exampleIndex];
+
+                        fingerImage.src = item.fingerImg;
+                        exampleImage.src = currentExample.image;
+                        exampleText.innerText = currentExample.text;
+
+                        textToSpeak = `${item.id}... ${item.word}... ${currentExample.text}`;
+                        card.dataset.exampleIndex = (exampleIndex + 1) % item.examples.length;
+                    } else {
+                        detailsDisplay.classList.add('hidden');
+                        const subtextEl = card.querySelector('.subtext') || document.createElement('p');
+                        if (!card.contains(subtextEl)) {
+                            subtextEl.className = 'subtext';
+                            card.appendChild(subtextEl);
+                        }
+                        subtextEl.innerText = `${item.emoji} ${item.word}`;
+                        textToSpeak = `${item.id}... for ${item.word}`;
+                        card.classList.toggle('reveal'); 
+                    }
+
+                    speakText(textToSpeak);
                 });
 
                 container.appendChild(card);
@@ -193,10 +245,10 @@
 
         function speakText(text) {
             if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Stop current speech
+                window.speechSynthesis.cancel(); 
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 0.9; // Slightly slower for kids
-                utterance.pitch = 1.2; // Cheerful pitch
+                utterance.rate = 0.85; 
+                utterance.pitch = 1.2; 
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -205,13 +257,13 @@
             if(mode === 'abc') {
                 document.getElementById('abc-container').classList.remove('hidden');
                 document.getElementById('num-container').classList.add('hidden');
+                detailsDisplay.classList.add('hidden'); 
             } else {
                 document.getElementById('abc-container').classList.add('hidden');
                 document.getElementById('num-container').classList.remove('hidden');
             }
         }
 
-        // Initialize
         createGrid(alphabetData, 'abc-container', false);
         createGrid(numberData, 'num-container', true);
     </script>
