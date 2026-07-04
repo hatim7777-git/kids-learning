@@ -2,6 +2,8 @@
 
 A simple, fun, and interactive web application designed to help toddlers and young children learn the alphabet and numbers. The app uses colorful visuals, emojis, and voice synthesis to create an engaging learning experience.
 
+**[🚀 Live Demo](https://hatim7777-git.github.io/kids-learning/)**
+
  <!-- TODO: Add a screenshot of your app! -->
 
 ## ✨ Features
