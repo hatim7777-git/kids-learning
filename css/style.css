@@ -25,6 +25,9 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 
 .nav-buttons {
     margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .mode-btn {
@@ -178,6 +181,9 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 }
 
 @media (max-width: 768px) {
+    #abc-container {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Allow letters to wrap */
+    }
     #num-container {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Allow numbers to wrap on small screens */
     }
