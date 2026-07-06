@@ -224,7 +224,9 @@ function createGrid(data, containerId, options = {}) {
                 }
             }
 
-            speakText(textToSpeak, lang);
+            if (!lang.startsWith('ar')) {
+                speakText(textToSpeak, lang);
+            }
         });
 
         container.appendChild(card);

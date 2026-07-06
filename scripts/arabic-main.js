@@ -6,7 +6,7 @@ const arabicAlphabetData = [
     {id: 'ث', word: 'ثعلب', image: 'images/ar_TH.png', color: '#FFB300'}, // Fox
     {id: 'ج', word: 'جمل', image: 'images/ar_J.png', color: '#795548'}, // Camel
     {id: 'ح', word: 'حصان', image: 'images/ar_H.png', color: '#A1887F'}, // Horse
-    {id: 'خ', word: 'خروف', image: 'images/ar_KH.png', color: '#E0E0E0'}, // Sheep
+    {id: 'خ', word: 'خروف', image: 'images/ar_KH.png', color: '#757575'}, // Sheep
     {id: 'د', word: 'ديك', image: 'images/ar_D.png', color: '#F44336'}, // Rooster
     {id: 'ذ', word: 'ذرة', image: 'images/ar_DH.png', color: '#FFEB3B'}, // Corn
     {id: 'ر', word: 'رمان', image: 'images/ar_R.png', color: '#E91E63'}, // Pomegranate
@@ -16,16 +16,16 @@ const arabicAlphabetData = [
     {id: 'ص', word: 'صاروخ', image: 'images/ar_SA.png', color: '#607D8B'}, // Rocket
     {id: 'ض', word: 'ضفدع', image: 'images/ar_DA.png', color: '#8BC34A'}, // Frog
     {id: 'ط', word: 'طائرة', image: 'images/ar_TA.png', color: '#03A9F4'}, // Airplane
-    {id: 'ظ', word: 'ظرف', image: 'images/ar_ZA.png', color: '#BDBDBD'}, // Envelope
+    {id: 'ظ', word: 'ظرف', image: 'images/ar_ZA.png', color: '#42A5F5'}, // Envelope
     {id: 'ع', word: 'عنب', image: 'images/ar_AIN.png', color: '#673AB7'}, // Grapes
     {id: 'غ', word: 'غزال', image: 'images/ar_GH.png', color: '#9E9E9E'}, // Deer
     {id: 'ف', word: 'فيل', image: 'images/ar_F.png', color: '#9C27B0'}, // Elephant
-    {id: 'ق', word: 'قمر', image: 'images/ar_Q.png', color: '#F5F5F5'}, // Moon
+    {id: 'ق', word: 'قمر', image: 'images/ar_Q.png', color: '#FFCA28'}, // Moon
     {id: 'ك', word: 'كلب', image: 'images/ar_K.png', color: '#A1887F'}, // Dog
     {id: 'ل', word: 'ليمون', image: 'images/ar_L.png', color: '#CDDC39'}, // Lemon
     {id: 'م', word: 'موز', image: 'images/ar_M.png', color: '#FFEB3B'}, // Banana
     {id: 'ن', word: 'نجمة', image: 'images/ar_N.png', color: '#FFD700'}, // Star
-    {id: 'هـ', word: 'هلال', image: 'images/ar_HA.png', color: '#C0C0C0'}, // Crescent
+    {id: 'هـ', word: 'هلال', image: 'images/ar_HA.png', color: '#78909C'}, // Crescent
     {id: 'و', word: 'وردة', image: 'images/ar_W.png', color: '#E91E63'}, // Rose
     {id: 'ي', word: 'يد', image: 'images/ar_Y.png', color: '#FFCCBC'}  // Hand
 ];
