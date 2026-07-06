@@ -115,7 +115,7 @@ const alphabetData = [
     {id: 'W', lower: 'w', word: 'Worm', emoji: '🪱', color: '#F48FB1'},
     {id: 'W', lower: 'w', word: 'Wolf', emoji: '🐺', color: '#9E9E9E'},
     {id: 'W', lower: 'w', word: 'Witch', emoji: '🧙', color: '#4CAF50'},
-    {id: 'X', lower: 'x', 'word': 'Xylophone', emoji: '🎼', image: 'images/ex_X.png', color: '#006064'},
+    {id: 'X', lower: 'x', word: 'Xylophone', emoji: '🎼', image: 'images/ex_X.png', color: '#006064'},
     {id: 'X', lower: 'x', word: 'X-ray', emoji: '🦴', color: '#FFFFFF'},
     {id: 'X', lower: 'x', word: 'Box', emoji: '📦', color: '#A1887F'}, // Using words with 'x'
     {id: 'X', lower: 'x', word: 'Axe', emoji: '🪓', color: '#9E9E9E'},
@@ -160,23 +160,31 @@ const starsDisplay = document.getElementById('stars-display');
 const clapSound = document.getElementById('clap-sound');
 const feedbackText = document.getElementById('feedback-text');
 
-function createGrid(data, containerId, isNumbers = false) {
+function createGrid(data, containerId, options = {}) {
+    const { isNumbers = false, lang = 'en-US' } = options;
     const container = document.getElementById(containerId);
-    container.innerHTML = ''; 
+    container.innerHTML = '';
 
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
+        if (lang.startsWith('ar')) {
+            card.classList.add('arabic-card');
+        }
         card.style.borderTop = `8px solid ${item.color}`;
         card.dataset.exampleIndex = 0; 
         
         const charEl = document.createElement('p');
         charEl.className = 'char';
         charEl.style.color = item.color;
+        charEl.lang = lang;
+
         if (isNumbers) {
             charEl.innerText = item.id;
-        } else {
+        } else if (item.lower) { // English alphabet has lowercase
             charEl.innerText = item.id + item.lower;
+        } else { // Arabic alphabet
+            charEl.innerText = item.id;
         }
 
         card.appendChild(charEl);
@@ -205,28 +213,29 @@ function createGrid(data, containerId, isNumbers = false) {
                 numberWordText.innerText = ''; // Clear number word for alphabet
 
                 primaryImage.src = item.image;
-                
+
                 // This part is for the learning mode, let's ensure it handles emoji-only items gracefully
                 if (item.image) {
-                    primaryImage.src = item.image;
+                    primaryImage.src = item.image; 
                     textToSpeak = `${item.id}... for ${item.word}`;
                 } else {
                     // If no image, we could show the emoji here too, but for now, we just speak it.
-                    textToSpeak = `${item.word}... starts with ${item.id}`;
+                    textToSpeak = `${item.id}... ${item.word}`;
                 }
             }
 
-            speakText(textToSpeak);
+            speakText(textToSpeak, lang);
         });
 
         container.appendChild(card);
     });
 }
 
-function speakText(text) {
+function speakText(text, lang = 'en-US') {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel(); 
         const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
         utterance.rate = 0.85; 
         utterance.pitch = 1.2; 
         window.speechSynthesis.speak(utterance);
@@ -234,23 +243,29 @@ function speakText(text) {
 }
 
 function switchMode(mode) {
+    // Hide all containers first
+    ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'game-container', 'details-display', 'learning-main'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+    });
+
     if(mode === 'abc') {
-        document.getElementById('abc-container').classList.remove('hidden');
         document.getElementById('learning-main').classList.remove('hidden');
-        document.getElementById('num-container').classList.add('hidden');
-        detailsDisplay.classList.add('hidden'); 
-        gameContainer.classList.add('hidden');
+        document.getElementById('abc-container').classList.remove('hidden');
     } else if (mode === 'num') {
-        document.getElementById('abc-container').classList.add('hidden');
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('num-container').classList.remove('hidden');
-        gameContainer.classList.add('hidden');
+    } else if (mode === 'arabic-abc') {
+        document.getElementById('learning-main').classList.remove('hidden');
+        document.getElementById('arabic-abc-container').classList.remove('hidden');
+        // Set main container to RTL
+        document.getElementById('arabic-abc-container').style.direction = 'rtl';
+    } else if (mode === 'arabic-num') {
+        document.getElementById('learning-main').classList.remove('hidden');
+        document.getElementById('arabic-num-container').classList.remove('hidden');
+        // Set main container to RTL
+        document.getElementById('arabic-num-container').style.direction = 'rtl';
     } else if (mode === 'game-abc' || mode === 'game-num') {
         const gameType = mode.split('-')[1]; // 'abc' or 'num'
-        document.getElementById('abc-container').classList.add('hidden');
-        document.getElementById('num-container').classList.add('hidden');
-        document.getElementById('learning-main').classList.add('hidden');
-        detailsDisplay.classList.add('hidden');
         gameContainer.classList.remove('hidden');
         startGame(gameType);
     }
@@ -470,5 +485,6 @@ for (const item of alphabetData) {
         seenLetters.add(item.id);
     }
 }
-createGrid(uniqueAlphabetData, 'abc-container', false);
-createGrid(numberData, 'num-container', true);
+// Initialize English grids
+createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
+createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });

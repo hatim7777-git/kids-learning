@@ -1,0 +1,28 @@
+/* Arabic Mode Buttons */
+#arabic-abc-btn {
+    background-color: #28a745; /* A nice green */
+    box-shadow: 0 5px 0 #1c7430;
+}
+
+#arabic-num-btn {
+    background-color: #6f42c1; /* A nice purple */
+    box-shadow: 0 5px 0 #4c2d85;
+}
+
+/* Style for Arabic cards to ensure right-to-left text */
+.arabic-card {
+    direction: rtl;
+}
+
+/* Grid layout for Arabic letters (28 letters, so 14 per row) */
+#arabic-abc-container {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 15px;
+}
+
+#arabic-num-container {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr); /* Same as English numbers */
+    gap: 15px;
+}
