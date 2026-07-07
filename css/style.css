@@ -47,6 +47,7 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 #num-mode-btn { background-color: var(--card-num); }
 #game-abc-btn { background-color: #00BCD4; }
 #game-num-btn { background-color: #9C27B0; }
+#shapes-btn { background-color: #3F51B5; box-shadow: 0 5px 0 #1A237E; }
 
 #abc-container {
     display: grid;
@@ -56,6 +57,12 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 #num-container {
     display: grid;
     grid-template-columns: repeat(11, 1fr); /* 11 numbers in one row */
+    gap: 15px;
+}
+
+#shapes-container {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 8 shapes in one row */
     gap: 15px;
 }
 
@@ -79,6 +86,12 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     font-size: 2.8rem; /* Adjusted for two letters */
     font-weight: bold;
     margin: 0;
+}
+
+.card-image {
+    height: 80px;
+    width: 80px;
+    object-fit: contain;
 }
 
 .subtext {
@@ -116,6 +129,11 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     font-size: 2.2rem;
 }
 
+.english-translation {
+    font-size: 1.5rem;
+    color: #888;
+}
+
 .example-display {
     display: flex;
     flex-direction: column;
@@ -123,7 +141,14 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     gap: 10px;
     font-size: 1.8rem;
     font-weight: bold;
+    justify-content: center; /* Ensures content is centered vertically */
 }
+
+.large-emoji {
+    font-size: 5rem !important; /* Use !important to override other styles */
+    line-height: 1;
+}
+
 
 /* Game Styles */
 #game-container {
