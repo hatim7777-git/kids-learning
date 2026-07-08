@@ -264,7 +264,7 @@ function createGrid(data, containerId, options = {}) {
                 const currentItem = relatedItems[itemIndex];
 
                 if (currentItem.englishWord) { // For Arabic letters
-                    primaryImage.classList.add('hidden'); // Hide primary image
+                    primaryImage.classList.add('hidden');
                     exampleText.classList.remove('hidden'); // Show emoji text
                     exampleText.classList.add('large-emoji');
                     exampleText.innerText = currentItem.emoji;
@@ -290,11 +290,40 @@ function createGrid(data, containerId, options = {}) {
                 card.dataset.exampleIndex = (itemIndex + 1) % relatedItems.length;
             }
 
-            speakText(textToSpeak, lang);
+            // Find the full item to check for custom audio
+            let itemToPlay;
+            if (isNumbers) {
+                itemToPlay = item;
+                itemToPlay.wordToSpeak = textToSpeak; // Pass the constructed sentence
+            } else {
+                const sourceData = lang.startsWith('ar') ? arabicAlphabetData : (displayType === 'image' ? shapesData : alphabetData);
+                const relatedItems = sourceData.filter(d => d.id === item.id);
+                const itemIndex = parseInt(card.dataset.exampleIndex) - 1 < 0 ? relatedItems.length - 1 : parseInt(card.dataset.exampleIndex) - 1;
+                itemToPlay = relatedItems[itemIndex];
+                itemToPlay.wordToSpeak = itemToPlay.word;
+            }
+
+            playAudioOrSpeak(itemToPlay, lang);
         });
 
         container.appendChild(card);
     });
+}
+
+function playAudioOrSpeak(item, lang, onEndCallback = null) {
+    if (item.audio) {
+        const customAudio = new Audio(item.audio);
+        if (onEndCallback) {
+            customAudio.onended = onEndCallback;
+        }
+        customAudio.play().catch(e => {
+            console.error("Error playing custom audio:", e);
+            // Fallback if audio fails to play
+            speakText(item.wordToSpeak || item.word, lang, onEndCallback);
+        });
+    } else {
+        speakText(item.wordToSpeak || item.word, lang, onEndCallback);
+    }
 }
 
 function speakText(text, lang = 'en-US', onEndCallback = null) {
@@ -558,7 +587,13 @@ function checkAnswer(event) {
         };
 
         // New sequence: Speak word -> pause -> clap -> next question
-        speakText(currentCorrectWord, 'en-US', () => {
+        const correctItem = {
+            word: currentCorrectWord
+            // In the future, you could add custom audio for quiz answers here too
+            // audio: 'path/to/correct_answer.mp3'
+        };
+
+        playAudioOrSpeak(correctItem, 'en-US', () => {
             // After word is spoken, wait a tiny bit
             clapSound.currentTime = 0;
             clapSound.play();
@@ -587,7 +622,7 @@ function checkAnswer(event) {
             // Re-enable clicks
             document.querySelectorAll('.option-card').forEach(card => card.addEventListener('click', checkAnswer));
             // Repeat the question audio
-            speakText(currentQuestionSpeech);
+            playAudioOrSpeak({ word: currentQuestionSpeech }, 'en-US');
         }, 2000);
     }
 }
