@@ -22,6 +22,8 @@
         <button id="arabic-abc-btn" class="mode-btn" onclick="switchMode('arabic-abc')">🔠 Arabic</button>
         <button id="arabic-num-btn" class="mode-btn" onclick="switchMode('arabic-num')">١٢٣ Arabic</button>
         <button id="shapes-btn" class="mode-btn" onclick="switchMode('shapes')">🎨 Shapes</button>
+        <button id="play-abc-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('abc')">Play ABC Song 🎵</button>
+        <button id="play-num-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('num')">Play 123 Song 🎵</button>
     </div>
 
     <!-- Active Detail Panel -->
@@ -55,6 +57,10 @@
     <!-- Audio for Game -->
     <!-- IMPORTANT: You need to add a 'clap.mp3' file to your images folder -->
     <audio id="clap-sound" src="images/clap.mp3"></audio>
+    <!-- Audio for Songs -->
+    <!-- IMPORTANT: You need to add 'abc_song.mp3' and 'num_song.mp3' to your images folder -->
+    <audio id="abc-song" src="images/abc_song.mp3" loop></audio>
+    <audio id="num-song" src="images/num_song.mp3" loop></audio>
 
     <script src="scripts/main.js"></script>
     <script src="scripts/arabic-main.js"></script>

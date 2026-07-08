@@ -28,12 +28,13 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 15px; /* Adds space between buttons both horizontally and vertically */
 }
 
 .mode-btn {
     font-size: 1.5rem;
     padding: 12px 25px;
-    margin: 0 10px;
+    /* margin is no longer needed as 'gap' handles spacing */
     cursor: pointer;
     border: none;
     border-radius: 50px;
@@ -48,6 +49,11 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 #game-abc-btn { background-color: #00BCD4; }
 #game-num-btn { background-color: #9C27B0; }
 #shapes-btn { background-color: #3F51B5; box-shadow: 0 5px 0 #1A237E; }
+.song-btn {
+    background-color: #fd7e14; /* A fun orange */
+    box-shadow: 0 5px 0 #c7610e;
+    font-size: 1.2rem; /* A bit smaller than mode buttons */
+}
 
 #abc-container {
     display: grid;
@@ -62,7 +68,7 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 
 #shapes-container {
     display: grid;
-    grid-template-columns: repeat(8, 1fr); /* 8 shapes in one row */
+    grid-template-columns: repeat(13, 1fr); /* 13 shapes in one row */
     gap: 15px;
 }
 

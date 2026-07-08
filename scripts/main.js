@@ -182,6 +182,10 @@ const gameContainer = document.getElementById('game-container');
 const starsDisplay = document.getElementById('stars-display');
 const clapSound = document.getElementById('clap-sound');
 const feedbackText = document.getElementById('feedback-text');
+const abcSong = document.getElementById('abc-song');
+const numSong = document.getElementById('num-song');
+const playAbcBtn = document.getElementById('play-abc-song-btn');
+const playNumBtn = document.getElementById('play-num-song-btn');
 
 function createGrid(data, containerId, options = {}) {
     const { isNumbers = false, lang = 'en-US', displayType = 'text' } = options;
@@ -309,18 +313,49 @@ function speakText(text, lang = 'en-US', onEndCallback = null) {
     }
 }
 
+function toggleSong(type) {
+    const song = (type === 'abc') ? abcSong : numSong;
+    const btn = (type === 'abc') ? playAbcBtn : playNumBtn;
+
+    if (song.paused) {
+        song.play();
+        btn.innerText = (type === 'abc') ? 'Pause ABC Song ⏸️' : 'Pause 123 Song ⏸️';
+    } else {
+        song.pause();
+        btn.innerText = (type === 'abc') ? 'Play ABC Song 🎵' : 'Play 123 Song 🎵';
+    }
+}
+
+function stopAllSongs() {
+    abcSong.pause();
+    abcSong.currentTime = 0;
+    playAbcBtn.innerText = 'Play ABC Song 🎵';
+
+    numSong.pause();
+    numSong.currentTime = 0;
+    playNumBtn.innerText = 'Play 123 Song 🎵';
+
+    playAbcBtn.classList.add('hidden');
+    playNumBtn.classList.add('hidden');
+}
+
 function switchMode(mode) {
     // Hide all containers first
     ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'shapes-container', 'game-container', 'details-display', 'learning-main'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 
+    // Stop any playing songs and hide buttons before switching mode
+    stopAllSongs();
+
     if(mode === 'abc') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('abc-container').classList.remove('hidden');
+        playAbcBtn.classList.remove('hidden');
     } else if (mode === 'num') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('num-container').classList.remove('hidden');
+        playNumBtn.classList.remove('hidden');
     } else if (mode === 'arabic-abc') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('arabic-abc-container').classList.remove('hidden');
