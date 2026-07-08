@@ -26,3 +26,9 @@
     grid-template-columns: repeat(11, 1fr); /* Same as English numbers */
     gap: 15px;
 }
+
+@media (max-width: 768px) {
+    #arabic-abc-container, #arabic-num-container {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Allow items to wrap */
+    }
+}

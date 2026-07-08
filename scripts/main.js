@@ -641,3 +641,6 @@ for (const item of alphabetData) {
 // Initialize English grids
 createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
 createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
+
+// Show the ABC song button by default since it's the default view
+document.getElementById('play-abc-song-btn').classList.remove('hidden');
