@@ -490,8 +490,11 @@ function generateNumberQuestion() {
     const questionType = Math.floor(Math.random() * 3); // 0, 1, or 2
 
     // Get 4 unique numbers for options
-    let shuffledData = [...numberData].sort(() => 0.5 - Math.random());
-    const questionOptions = shuffledData.slice(0, 4);
+    // Filter numbers to a specific range for focused learning
+    const maxNumberForQuiz = 5; // Change this value to adjust the maximum number for the quiz
+    const filteredNumberData = numberData.filter(item => parseInt(item.id) <= maxNumberForQuiz);
+    let shuffledData = [...filteredNumberData].sort(() => 0.5 - Math.random());
+    const questionOptions = shuffledData.slice(0, 4); // Still pick 4 options from the filtered data
     const correctAnswer = questionOptions[0];
     currentCorrectAnswerId = correctAnswer.id;
     currentCorrectWord = correctAnswer.word;
