@@ -487,7 +487,7 @@ function generateAlphabetQuestion() {
 function generateNumberQuestion() {
     const questionTextEl = document.getElementById('question-text');
     const optionsArea = document.getElementById('options-area');
-    const questionType = Math.floor(Math.random() * 3); // 0, 1, or 2
+    const questionType = Math.floor(Math.random() * 3); // 0, 1, or 2. Emoji counting is back.
 
     // Get 4 unique numbers for options
     // Filter numbers to a specific range for focused learning
@@ -529,7 +529,8 @@ function generateNumberQuestion() {
         });
     } else { // Count the emojis
         const count = parseInt(correctAnswer.id);
-        const emojiList = ['🍓', '🍬', '⭐', '🚗', '🎈', '🍎', '⚽'];
+        // List of emojis for the counting question, star is excluded to avoid confusion with score.
+        const emojiList = ['🍓', '🍬', '🚗', '🎈', '🍎', '⚽', '🥦', '🍩'];
         const randomEmoji = emojiList[Math.floor(Math.random() * emojiList.length)];
         const emojiString = randomEmoji.repeat(count);
 
