@@ -48,7 +48,10 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 #num-mode-btn { background-color: var(--card-num); }
 #game-abc-btn { background-color: #00BCD4; }
 #game-num-btn { background-color: #9C27B0; }
+#game-colors-btn { background-color: #FF5722; box-shadow: 0 5px 0 #BF360C; }
 #shapes-btn { background-color: #3F51B5; box-shadow: 0 5px 0 #1A237E; }
+#colors-btn { background-color: #E91E63; box-shadow: 0 5px 0 #880E4F; }
+#writing-test-btn { background-color: #009688; box-shadow: 0 5px 0 #00695C; }
 .song-btn {
     background-color: #fd7e14; /* A fun orange */
     box-shadow: 0 5px 0 #c7610e;
@@ -68,7 +71,13 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 
 #shapes-container {
     display: grid;
-    grid-template-columns: repeat(13, 1fr); /* 13 shapes in one row */
+    grid-template-columns: repeat(6, 1fr); /* 6 shapes per row for better responsiveness */
+    gap: 15px;
+}
+
+#colors-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 colors per row for better layout with more colors */
     gap: 15px;
 }
 
@@ -110,6 +119,19 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 /* .reveal class is no longer used for card content */
 
 .hidden { display: none !important; }
+
+.color-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    border: 3px solid #333;
+    transition: transform 0.2s ease;
+}
+
+.card:hover .color-swatch {
+    transform: scale(1.1);
+}
 
 #details-display {
     display: flex;
@@ -212,11 +234,126 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
 }
 
 @media (max-width: 768px) {
-    #abc-container {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Allow letters to wrap */
-    }
-    #num-container {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Allow numbers to wrap on small screens */
+    #abc-container, #num-container, #shapes-container, #colors-container {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* Allow items to wrap */
+        gap: 10px;
     }
     #details-display { flex-direction: column; gap: 20px; }
+    #writing-canvas {
+        width: 300px;
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    #abc-container, #num-container, #shapes-container, #colors-container {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Smaller items on phones */
+        gap: 8px;
+    }
+    .card {
+        padding: 15px 5px;
+        min-height: 100px;
+    }
+    .char {
+        font-size: 2rem;
+    }
+}
+#writing-test-panel {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.writing-test-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#writing-instruction {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.writing-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.writing-btn {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 4px 0 #999;
+    transition: all 0.1s ease;
+}
+
+.writing-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #999;
+}
+
+#clear-canvas-btn { background-color: #f44336; }
+#check-writing-btn { background-color: #4CAF50; }
+#next-writing-btn { background-color: #2196F3; }
+#prev-writing-btn { background-color: #FF9800; }
+
+.canvas-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#writing-canvas {
+    border: 4px solid #333;
+    border-radius: 15px;
+    background-color: white;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+.writing-feedback {
+    margin-top: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    min-height: 30px;
+}
+
+.writing-options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.writing-mode-btn {
+    font-size: 1.2rem;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    background-color: #ddd;
+    box-shadow: 0 4px 0 #999;
+    transition: all 0.1s ease;
+}
+
+.writing-mode-btn.active {
+    background-color: #FF9800;
+    box-shadow: 0 4px 0 #E65100;
+}
+
+.writing-mode-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #999;
 }

@@ -171,21 +171,27 @@ const numberData = [
     {id: '10', word: 'Ten', fingerImg: 'images/F10.png', examples: [{text: '👐 We have Ten fingers', image: 'images/ex10.png'}], color: '#795548'}
 ];
 
-const detailsDisplay = document.getElementById('details-display');
-const primaryImage = document.getElementById('primary-image');
-const exampleImage = document.getElementById('example-image');
-const exampleText = document.getElementById('example-text');
-const numberWordText = document.getElementById('number-word-text');
+// DOM elements - will be initialized after DOM is ready
+let detailsDisplay, primaryImage, exampleImage, exampleText, numberWordText;
+let gameContainer, starsDisplay, clapSound, feedbackText, abcSong, numSong, playAbcBtn, playNumBtn;
 
-// Game elements
-const gameContainer = document.getElementById('game-container');
-const starsDisplay = document.getElementById('stars-display');
-const clapSound = document.getElementById('clap-sound');
-const feedbackText = document.getElementById('feedback-text');
-const abcSong = document.getElementById('abc-song');
-const numSong = document.getElementById('num-song');
-const playAbcBtn = document.getElementById('play-abc-song-btn');
-const playNumBtn = document.getElementById('play-num-song-btn');
+// Initialize DOM elements
+function initializeDOMElements() {
+    detailsDisplay = document.getElementById('details-display');
+    primaryImage = document.getElementById('primary-image');
+    exampleImage = document.getElementById('example-image');
+    exampleText = document.getElementById('example-text');
+    numberWordText = document.getElementById('number-word-text');
+
+    gameContainer = document.getElementById('game-container');
+    starsDisplay = document.getElementById('stars-display');
+    clapSound = document.getElementById('clap-sound');
+    feedbackText = document.getElementById('feedback-text');
+    abcSong = document.getElementById('abc-song');
+    numSong = document.getElementById('num-song');
+    playAbcBtn = document.getElementById('play-abc-song-btn');
+    playNumBtn = document.getElementById('play-num-song-btn');
+}
 
 function createGrid(data, containerId, options = {}) {
     const { isNumbers = false, lang = 'en-US', displayType = 'text' } = options;
@@ -207,12 +213,30 @@ function createGrid(data, containerId, options = {}) {
             imgEl.alt = item.word;
             imgEl.className = 'card-image';
             card.appendChild(imgEl);
+        } else if (displayType === 'color') {
+            // For colors, show color swatch and text
+            const colorSwatch = document.createElement('div');
+            colorSwatch.className = 'color-swatch';
+            colorSwatch.style.backgroundColor = item.color;
+            card.appendChild(colorSwatch);
+
+            const charEl = document.createElement('p');
+            charEl.className = 'char';
+            // Use darker text for light colors for better readability
+            const lightColors = ['#FFFFFF', '#FFFF00', '#FFC0CB', '#ADD8E6', '#90EE90', '#FFD700', '#A9A9A9', '#EE82EE', '#00FF00', '#00FFFF', '#FF00FF'];
+            if (lightColors.includes(item.color)) {
+                charEl.style.color = '#333';
+            } else {
+                charEl.style.color = item.color;
+            }
+            charEl.innerText = item.word;
+            card.appendChild(charEl);
         } else {
             const charEl = document.createElement('p');
             charEl.className = 'char';
             charEl.style.color = item.color;
             charEl.lang = lang;
-    
+
             if (isNumbers) {
                 charEl.innerText = item.id;
             } else if (item.lower) { // English alphabet has lowercase
@@ -220,7 +244,7 @@ function createGrid(data, containerId, options = {}) {
             } else { // Arabic alphabet
                 charEl.innerText = item.id;
             }
-    
+
             card.appendChild(charEl);
         }
 
@@ -243,10 +267,38 @@ function createGrid(data, containerId, options = {}) {
                 const textForSpeech = currentExample.text.replace(/^(\p{Emoji}|\p{Punctuation})\s*/u, '');
                 textToSpeak = `${item.id}... ${textForSpeech}`;
                 card.dataset.exampleIndex = (exampleIndex + 1) % item.examples.length;
+            } else if (displayType === 'color') {
+                // For colors, just play the audio and show a simple display
+                detailsDisplay.classList.remove('hidden');
+                document.querySelector('.example-display').classList.remove('hidden');
+
+                // Hide image elements
+                primaryImage.classList.add('hidden');
+                exampleImage.classList.add('hidden');
+                exampleText.classList.add('hidden');
+
+                // Show color name
+                numberWordText.innerText = item.word;
+                numberWordText.style.color = item.color;
+                textToSpeak = item.word;
+
+                // Create a color preview in the details display
+                exampleText.classList.remove('hidden');
+                exampleText.classList.remove('large-emoji');
+                exampleText.style.backgroundColor = item.color;
+                exampleText.style.width = '100px';
+                exampleText.style.height = '100px';
+                exampleText.style.borderRadius = '50%';
+                exampleText.style.margin = '0 auto';
+                exampleText.style.border = '4px solid #ddd';
+                exampleText.innerText = '';
+
+                speakText(textToSpeak, lang);
+                return; // Return early since we handled it specially
             } else {
                 detailsDisplay.classList.remove('hidden');
                 document.querySelector('.example-display').classList.remove('hidden'); // Show the example view
-                
+
                 let sourceData;
                 // Hide the smaller example display by default for single-image items
                 exampleImage.classList.add('hidden');
@@ -297,19 +349,21 @@ function createGrid(data, containerId, options = {}) {
     });
 }
 
-function speakText(text, lang = 'en-US', onEndCallback = null) {
+function speakText(text, lang = 'en-US') {
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); 
+        window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
-        utterance.rate = 0.85; 
-        utterance.pitch = 1.2; 
-
-        if (onEndCallback) {
-            utterance.onend = onEndCallback;
-        }
+        utterance.rate = 0.85;
+        utterance.pitch = 1.2;
 
         window.speechSynthesis.speak(utterance);
+    }
+}
+
+function stopSpeech() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
     }
 }
 
@@ -335,13 +389,24 @@ function stopAllSongs() {
     numSong.currentTime = 0;
     playNumBtn.innerText = 'Play 123 Song 🎵';
 
+    clapSound.pause();
+    clapSound.currentTime = 0;
+
     playAbcBtn.classList.add('hidden');
     playNumBtn.classList.add('hidden');
 }
 
 function switchMode(mode) {
+    // Stop any ongoing speech FIRST
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+
+    // Clear any pending quiz timeouts
+    clearQuizTimeouts();
+
     // Hide all containers first
-    ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'shapes-container', 'game-container', 'details-display', 'learning-main'].forEach(id => {
+    ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'shapes-container', 'colors-container', 'game-container', 'details-display', 'learning-main', 'writing-test-panel'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 
@@ -369,8 +434,16 @@ function switchMode(mode) {
     } else if (mode === 'shapes') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('shapes-container').classList.remove('hidden');
-    } else if (mode === 'game-abc' || mode === 'game-num') {
-        const gameType = mode.split('-')[1]; // 'abc' or 'num'
+    } else if (mode === 'colors') {
+        document.getElementById('learning-main').classList.remove('hidden');
+        document.getElementById('colors-container').classList.remove('hidden');
+    } else if (mode === 'writing-test') {
+        document.getElementById('writing-test-panel').classList.remove('hidden');
+        if (typeof initializeWritingTest === 'function') {
+            initializeWritingTest();
+        }
+    } else if (mode === 'game-abc' || mode === 'game-num' || mode === 'game-colors') {
+        const gameType = mode.split('-')[1]; // 'abc', 'num', or 'colors'
         gameContainer.classList.remove('hidden');
         startGame(gameType);
     }
@@ -381,6 +454,20 @@ let currentCorrectAnswerId = '';
 let currentQuestionSpeech = '';
 let currentCorrectWord = '';
 let currentGameType = '';
+let quizTimeouts = []; // Track all quiz-related timeouts to cancel them when switching modes
+
+// Helper function to create tracked timeout
+function createTrackedTimeout(callback, delay) {
+    const timeoutId = setTimeout(callback, delay);
+    quizTimeouts.push(timeoutId);
+    return timeoutId;
+}
+
+// Clear all quiz timeouts
+function clearQuizTimeouts() {
+    quizTimeouts.forEach(id => clearTimeout(id));
+    quizTimeouts = [];
+}
 
 function startGame(type) {
     currentGameType = type;
@@ -393,11 +480,13 @@ function nextQuestion() {
     const optionsArea = document.getElementById('options-area');
     optionsArea.innerHTML = ''; // Clear old options
 
-    // Randomly choose between an alphabet or number question
+    // Randomly choose between an alphabet, number, or color question
     if (currentGameType === 'abc') {
         generateAlphabetQuestion();
-    } else {
+    } else if (currentGameType === 'num') {
         generateNumberQuestion();
+    } else if (currentGameType === 'colors') {
+        generateColorQuestion();
     }
 }
 
@@ -520,6 +609,44 @@ function generateNumberQuestion() {
     speakText(currentQuestionSpeech);
 }
 
+function generateColorQuestion() {
+    const questionTextEl = document.getElementById('question-text');
+    const optionsArea = document.getElementById('options-area');
+
+    // Get 4 unique colors for options
+    const shuffledColors = [...window.colorsData].sort(() => 0.5 - Math.random());
+    const questionOptions = shuffledColors.slice(0, 4);
+    const correctAnswer = questionOptions[0];
+    currentCorrectAnswerId = correctAnswer.word;
+    currentCorrectWord = correctAnswer.word;
+
+    // Ask to find the color by name
+    currentQuestionSpeech = `Find the color ${correctAnswer.word}`;
+    questionTextEl.innerText = currentQuestionSpeech;
+
+    const displayOptions = [...questionOptions].sort(() => 0.5 - Math.random());
+
+    displayOptions.forEach(option => {
+        const optionCard = document.createElement('div');
+        optionCard.className = 'option-card';
+        optionCard.dataset.id = option.word;
+
+        const colorPreview = document.createElement('div');
+        colorPreview.style.backgroundColor = option.color;
+        colorPreview.style.width = '80px';
+        colorPreview.style.height = '80px';
+        colorPreview.style.borderRadius = '50%';
+        colorPreview.style.margin = '0 auto';
+        colorPreview.style.border = '3px solid #ddd';
+        optionCard.appendChild(colorPreview);
+
+        optionCard.addEventListener('click', checkAnswer);
+        optionsArea.appendChild(optionCard);
+    });
+
+    speakText(currentQuestionSpeech);
+}
+
 function checkAnswer(event) {
     const selectedCard = event.currentTarget;
     const selectedId = selectedCard.dataset.id;
@@ -558,18 +685,20 @@ function checkAnswer(event) {
         };
 
         // New sequence: Speak word -> pause -> clap -> next question
-        speakText(currentCorrectWord, 'en-US', () => {
-            // After word is spoken, wait a tiny bit
+        speakText(currentCorrectWord, 'en-US');
+
+        // Wait for speech to complete (using setTimeout instead of callback for iOS compatibility)
+        createTrackedTimeout(() => {
             clapSound.currentTime = 0;
             clapSound.play();
 
             // Let the clap play for 1 second, then pause it and proceed.
-            setTimeout(() => {
+            createTrackedTimeout(() => {
                 clapSound.pause();
                 // A small delay before the next question appears for a smoother transition
-                setTimeout(proceedToNextStep, 500);
+                createTrackedTimeout(proceedToNextStep, 500);
             }, 1000); // Play clap for max 1 second
-        });
+        }, 1500); // Wait 1.5 seconds for speech to complete
 
 
     } else {
@@ -581,7 +710,7 @@ function checkAnswer(event) {
         // Disable clicks during the pause
         document.querySelectorAll('.option-card').forEach(card => card.removeEventListener('click', checkAnswer));
 
-        setTimeout(() => {
+        createTrackedTimeout(() => {
             selectedCard.classList.remove('incorrect');
             feedbackText.innerText = "";
             // Re-enable clicks
@@ -603,6 +732,55 @@ for (const item of alphabetData) {
         seenLetters.add(item.id);
     }
 }
-// Initialize English grids
-createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
-createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
+
+// Initial setup after DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize DOM elements
+    initializeDOMElements();
+
+    // Create a unique list for the alphabet learning grid to avoid duplicate letter cards.
+    // The game mode will still use the full 'alphabetData' with all examples.
+    const uniqueAlphabetData = [];
+    const seenLetters = new Set();
+    for (const item of alphabetData) {
+        if (!seenLetters.has(item.id)) {
+            uniqueAlphabetData.push(item);
+            seenLetters.add(item.id);
+        }
+    }
+    // Initialize English grids
+    createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
+    createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
+
+    // Show the ABC song button by default since it's the default view
+    if (playAbcBtn) playAbcBtn.classList.remove('hidden');
+
+    // Add event listeners to navigation buttons to stop speech before switching
+    const navButtons = document.querySelectorAll('.mode-btn:not(.song-btn)');
+    navButtons.forEach(btn => {
+        const originalOnClick = btn.getAttribute('onclick');
+        btn.removeAttribute('onclick');
+        btn.addEventListener('click', () => {
+            stopSpeech();
+            if (originalOnClick) {
+                eval(originalOnClick);
+            }
+        });
+    });
+
+    // Add event listeners to song buttons
+    document.getElementById('play-abc-song-btn').addEventListener('click', () => toggleSong('abc'));
+    document.getElementById('play-num-song-btn').addEventListener('click', () => toggleSong('num'));
+
+    // Add event listeners to mode buttons
+    document.getElementById('abc-mode-btn').addEventListener('click', () => switchMode('abc'));
+    document.getElementById('num-mode-btn').addEventListener('click', () => switchMode('num'));
+    document.getElementById('game-abc-btn').addEventListener('click', () => switchMode('game-abc'));
+    document.getElementById('game-num-btn').addEventListener('click', () => switchMode('game-num'));
+    document.getElementById('game-colors-btn').addEventListener('click', () => switchMode('game-colors'));
+    document.getElementById('arabic-abc-btn').addEventListener('click', () => switchMode('arabic-abc'));
+    document.getElementById('arabic-num-btn').addEventListener('click', () => switchMode('arabic-num'));
+    document.getElementById('shapes-btn').addEventListener('click', () => switchMode('shapes'));
+    document.getElementById('colors-btn').addEventListener('click', () => switchMode('colors'));
+    document.getElementById('writing-test-btn').addEventListener('click', () => switchMode('writing-test'));
+});
