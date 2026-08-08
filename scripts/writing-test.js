@@ -10,6 +10,7 @@ let lastY = 0;
 let currentMode = 'letters'; // 'letters' or 'numbers'
 let currentIndex = 0;
 let isSpeaking = false; // Track if currently speaking
+let showGuide = true; // Track if guide character is visible
 
 // Data for characters
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -42,6 +43,14 @@ window.initializeWritingTest = function() {
         setupButtonListeners();
         setupCanvasEventListeners();
         updateInstruction();
+        
+        // Initialize toggle guide button state
+        const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+        if (toggleGuideBtn) {
+            toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+            toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+        }
+        
         console.log('Writing test initialized');
     } else {
         console.error('Canvas element not found');
@@ -63,7 +72,7 @@ function setupCanvasEventListeners() {
 
     // Set drawing properties
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 5; // Increased line width for better OCR
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
@@ -87,12 +96,89 @@ function setupCanvasEventListeners() {
 // Initialize canvas
 window.setupCanvas = function() {
     if (!ctx) return;
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Only clear the drawing (black lines), not the guide
+    // This allows kids to write over the guide
+    // To completely clear (remove guide), use clearCanvas that will redraw guide
+    if (!showGuide) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 5; // Increased line width for better OCR
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    
+    // Redraw guide if it should be visible
+    if (showGuide) {
+        const items = currentMode === 'letters' ? letters : numbers;
+        const currentItem = items[currentIndex];
+        drawGuideCharacter(currentItem);
+    }
+};
+
+// Clear canvas completely (including guide)
+window.clearCanvas = function() {
+    if (!ctx) return;
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Redraw guide if it should be visible
+    if (showGuide) {
+        const items = currentMode === 'letters' ? letters : numbers;
+        const currentItem = items[currentIndex];
+        drawGuideCharacter(currentItem);
+    }
+};
+
+// Pre-draw the character as a guide
+window.drawGuideCharacter = function(character) {
+    if (!ctx) return;
+
+    // Draw the character in light gray as a guide
+    ctx.save();
+    ctx.font = 'bold 200px Arial';
+    ctx.fillStyle = '#E0E0E0'; // Light gray
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(character, canvas.width / 2, canvas.height / 2);
+    ctx.restore();
+};
+
+// Preprocess image for better OCR
+window.preprocessImage = function(imageData) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Resize to optimal size for OCR (100x100)
+            tempCanvas.width = 100;
+            tempCanvas.height = 100;
+            tempCtx.drawImage(img, 0, 0, 100, 100);
+            
+            // Get image data
+            const imageDataObj = tempCtx.getImageData(0, 0, 100, 100);
+            const data = imageDataObj.data;
+            
+            // Apply thresholding (convert to black and white)
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                const threshold = 128;
+                const value = avg > threshold ? 255 : 0;
+                data[i] = value;     // R
+                data[i + 1] = value; // G
+                data[i + 2] = value; // B
+                // Alpha stays the same
+            }
+            
+            // Put processed image data back
+            tempCtx.putImageData(imageDataObj, 0, 0);
+            
+            // Return as data URL
+            resolve(tempCanvas.toDataURL('image/png'));
+        };
+        img.src = imageData;
+    });
 };
 
 // Drawing functions
@@ -179,6 +265,14 @@ function updateInstruction() {
     const modeText = currentMode === 'letters' ? 'letter' : 'number';
     if (instructionEl) instructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
 
+    // Clear canvas before drawing new guide
+    window.clearCanvas();
+
+    // Draw the character as a guide if enabled
+    if (showGuide && typeof drawGuideCharacter === 'function') {
+        drawGuideCharacter(currentItem);
+    }
+
     // Speak the instruction
     speakWritingText(`Write the ${modeText} ${currentItem}`);
 }
@@ -207,6 +301,26 @@ window.setupButtonListeners = function() {
     const checkBtn = document.getElementById('check-writing-btn');
     const nextBtn = document.getElementById('next-writing-btn');
     const prevBtn = document.getElementById('prev-writing-btn');
+    const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            stopSpeaking(); // Stop any ongoing speech
+            window.clearCanvas();
+            if (feedbackEl) feedbackEl.innerText = '';
+        });
+    }
+
+    if (toggleGuideBtn) {
+        toggleGuideBtn.addEventListener('click', () => {
+            stopSpeaking(); // Stop any ongoing speech
+            showGuide = !showGuide;
+            toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+            toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+            window.clearCanvas(); // Redraw with/without guide
+            if (feedbackEl) feedbackEl.innerText = '';
+        });
+    }
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
@@ -244,10 +358,13 @@ window.setupButtonListeners = function() {
             try {
                 // Convert canvas to image for OCR
                 const imageData = canvas.toDataURL('image/png');
+                
+                // Preprocess image for better OCR accuracy
+                const preprocessedImage = await window.preprocessImage(imageData);
 
                 // Use Tesseract.js to recognize the drawn character
-                const result = await Tesseract.recognize(imageData, 'eng', {
-                    logger: m => console.log(m) // Optional: log progress
+                const result = await Tesseract.recognize(preprocessedImage, 'eng', {
+                    logger: m => {} // Disable logging
                 });
 
                 const recognizedText = result.data.text.trim().toUpperCase();
@@ -271,10 +388,12 @@ window.setupButtonListeners = function() {
                     speakWritingText('Good try! That looks like a ' + expectedChar);
                 } else {
                     if (feedbackEl) {
-                        feedbackEl.innerHTML = '🤔 Keep practicing! Try writing the ' + expectedChar + ' again';
+                        feedbackEl.innerHTML = '🤔 Try again! Please write the ' + expectedChar + ' again';
                         feedbackEl.style.color = '#2196F3';
                     }
                     speakWritingText('Keep practicing! Try writing the ' + expectedChar + ' again');
+                    // Auto-erase canvas on retry
+                    window.clearCanvas();
                 }
             } catch (error) {
                 console.error('OCR Error:', error);

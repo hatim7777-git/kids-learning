@@ -446,8 +446,12 @@ function switchMode(mode) {
         document.getElementById('colors-container').classList.remove('hidden');
     } else if (mode === 'writing-test') {
         document.getElementById('writing-test-panel').classList.remove('hidden');
+        // Initialize the writing canvas and event listeners
         if (typeof initializeWritingTest === 'function') {
             initializeWritingTest();
+        }
+        if (typeof setupButtonListeners === 'function') {
+            setupButtonListeners();
         }
     } else if (mode === 'game-abc' || mode === 'game-num' || mode === 'game-colors') {
         const gameType = mode.split('-')[1]; // 'abc', 'num', or 'colors'
