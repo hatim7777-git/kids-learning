@@ -16,6 +16,8 @@ const shapesData = [
     {id: 'Hexagon', word: 'Hexagon', image: 'images/shape_hexagon.png', color: '#795548'}
 ];
 
-// Initialize Shapes grid
-// We use 'displayType: "image"' to show the shape image directly on the card.
-createGrid(shapesData, 'shapes-container', { lang: 'en-US', displayType: 'image' });
+// Initialize Shapes grid after main.js is loaded
+setTimeout(() => {
+    // We use 'displayType: "image"' to show the shape image directly on the card.
+    createGrid(shapesData, 'shapes-container', { lang: 'en-US', displayType: 'image' });
+}, 100);

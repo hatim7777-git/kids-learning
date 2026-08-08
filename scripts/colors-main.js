@@ -26,16 +26,13 @@ const colorsData = [
 window.colorsData = colorsData;
 
 // Initialize colors grid after main.js is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Wait for main.js to load and define createGrid
-    setTimeout(() => {
-        if (typeof createGrid === 'function') {
-            createGrid(colorsData, 'colors-container', { displayType: 'color', lang: 'en-US' });
-        } else {
-            console.error('createGrid function not found. Make sure main.js is loaded before colors-main.js');
-        }
-    }, 100);
-});
+setTimeout(() => {
+    if (typeof createGrid === 'function') {
+        createGrid(colorsData, 'colors-container', { displayType: 'color', lang: 'en-US' });
+    } else {
+        console.error('createGrid function not found. Make sure main.js is loaded before colors-main.js');
+    }
+}, 100);
 
 // Color Quiz - handled in main.js through the existing quiz system
 // The quiz will use window.colorsData when game type is 'colors'

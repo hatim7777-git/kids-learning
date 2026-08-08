@@ -82,8 +82,6 @@ function setupCanvasEventListeners() {
         draw(e);
     });
     canvas.addEventListener('touchend', stopDrawing);
-
-    console.log('Canvas event listeners set up with line width:', ctx.lineWidth);
 }
 
 // Initialize canvas
@@ -95,7 +93,6 @@ window.setupCanvas = function() {
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    console.log('Canvas setup complete with line width:', ctx.lineWidth);
 };
 
 // Drawing functions
@@ -107,8 +104,6 @@ function startDrawing(e) {
 
     // Stop any ongoing speech when user starts drawing
     stopSpeaking();
-
-    console.log('Drawing started at:', pos.x, pos.y);
 }
 
 function draw(e) {
@@ -160,30 +155,13 @@ function hasContent() {
     return false;
 }
 
-// Speech functions
-function speakText(text) {
-    if ('speechSynthesis' in window) {
-        // Cancel any current speech
-        window.speechSynthesis.cancel();
+// Speech functions - use the speakText function from main.js
+// This function has been removed to avoid conflict with main.js speakText
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.8;
-
-        // Track when speech starts and ends
-        utterance.onstart = () => {
-            isSpeaking = true;
-        };
-
-        utterance.onend = () => {
-            isSpeaking = false;
-        };
-
-        utterance.onerror = () => {
-            isSpeaking = false;
-        };
-
-        window.speechSynthesis.speak(utterance);
+// Helper function to speak text with English language for writing test
+function speakWritingText(text) {
+    if (typeof speakText === 'function') {
+        speakText(text, 'en-US');
     }
 }
 
@@ -202,7 +180,7 @@ function updateInstruction() {
     if (instructionEl) instructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
 
     // Speak the instruction
-    speakText(`Write the ${modeText} ${currentItem}`);
+    speakWritingText(`Write the ${modeText} ${currentItem}`);
 }
 
 // Next character
@@ -284,19 +262,19 @@ window.setupButtonListeners = function() {
                         feedbackEl.innerHTML = '✅ Excellent! That\'s a perfect ' + expectedChar + '!';
                         feedbackEl.style.color = '#4CAF50';
                     }
-                    speakText('Great job! That is a perfect ' + expectedChar);
+                    speakWritingText('Great job! That is a perfect ' + expectedChar);
                 } else if (recognizedText.includes(expectedChar) || expectedChar.includes(recognizedText)) {
                     if (feedbackEl) {
                         feedbackEl.innerHTML = '👍 Good try! Almost there - that looks like a ' + expectedChar;
                         feedbackEl.style.color = '#FF9800';
                     }
-                    speakText('Good try! That looks like a ' + expectedChar);
+                    speakWritingText('Good try! That looks like a ' + expectedChar);
                 } else {
                     if (feedbackEl) {
                         feedbackEl.innerHTML = '🤔 Keep practicing! Try writing the ' + expectedChar + ' again';
                         feedbackEl.style.color = '#2196F3';
                     }
-                    speakText('Keep practicing! Try writing the ' + expectedChar + ' again');
+                    speakWritingText('Keep practicing! Try writing the ' + expectedChar + ' again');
                 }
             } catch (error) {
                 console.error('OCR Error:', error);
@@ -304,7 +282,7 @@ window.setupButtonListeners = function() {
                     feedbackEl.innerHTML = '✅ Great effort! Keep practicing!';
                     feedbackEl.style.color = '#4CAF50';
                 }
-                speakText('Great effort! Keep practicing');
+                speakWritingText('Great effort! Keep practicing');
             }
         });
     }

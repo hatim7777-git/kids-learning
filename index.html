@@ -16,18 +16,18 @@
     </header>
 
     <div class="nav-buttons">
-        <button id="abc-mode-btn" class="mode-btn">🔤 ABCs</button>
-        <button id="num-mode-btn" class="mode-btn">🔢 123s</button>
-        <button id="game-abc-btn" class="mode-btn">Alphabet Quiz 🔤</button>
-        <button id="game-num-btn" class="mode-btn">Number Quiz 🔢</button>
-        <button id="game-colors-btn" class="mode-btn">Color Quiz 🌈</button>
-        <button id="arabic-abc-btn" class="mode-btn">🔠 Arabic</button>
-        <button id="arabic-num-btn" class="mode-btn">١٢٣ Arabic</button>
-        <button id="shapes-btn" class="mode-btn">🎨 Shapes</button>
-        <button id="colors-btn" class="mode-btn">🌈 Colors</button>
-        <button id="writing-test-btn" class="mode-btn">✍️ Writing Test</button>
-        <button id="play-abc-song-btn" class="mode-btn song-btn hidden">Play ABC Song 🎵</button>
-        <button id="play-num-song-btn" class="mode-btn song-btn hidden">Play 123 Song 🎵</button>
+        <button id="abc-mode-btn" class="mode-btn" onclick="switchMode('abc')">🔤 ABCs</button>
+        <button id="num-mode-btn" class="mode-btn" onclick="switchMode('num')">🔢 123s</button>
+        <button id="game-abc-btn" class="mode-btn" onclick="switchMode('game-abc')">Alphabet Quiz 🔤</button>
+        <button id="game-num-btn" class="mode-btn" onclick="switchMode('game-num')">Number Quiz 🔢</button>
+        <button id="game-colors-btn" class="mode-btn" onclick="switchMode('game-colors')">Color Quiz 🌈</button>
+        <button id="arabic-abc-btn" class="mode-btn" onclick="switchMode('arabic-abc')">🔠 Arabic</button>
+        <button id="arabic-num-btn" class="mode-btn" onclick="switchMode('arabic-num')">١٢٣ Arabic</button>
+        <button id="shapes-btn" class="mode-btn" onclick="switchMode('shapes')">🎨 Shapes</button>
+        <button id="colors-btn" class="mode-btn" onclick="switchMode('colors')">🌈 Colors</button>
+        <button id="writing-test-btn" class="mode-btn" onclick="switchMode('writing-test')">✍️ Writing Test</button>
+        <button id="play-abc-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('abc')">Play ABC Song 🎵</button>
+        <button id="play-num-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('num')">Play 123 Song 🎵</button>
     </div>
 
     <!-- Active Detail Panel -->

@@ -96,10 +96,10 @@ for (const item of arabicAlphabetData) {
     }
 }
 
-// Initialize Arabic grids after DOM is ready (with delay to ensure main.js is loaded)
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
+// Initialize Arabic grids after main.js is loaded
+setTimeout(() => {
+    if (typeof createGrid === 'function') {
         createGrid(uniqueArabicAlphabetData, 'arabic-abc-container', { isNumbers: false, lang: 'ar-SA' });
         createGrid(arabicNumberData, 'arabic-num-container', { isNumbers: true, lang: 'ar-SA' });
-    }, 100);
-});
+    }
+}, 500);

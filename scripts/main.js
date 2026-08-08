@@ -171,27 +171,21 @@ const numberData = [
     {id: '10', word: 'Ten', fingerImg: 'images/F10.png', examples: [{text: '👐 We have Ten fingers', image: 'images/ex10.png'}], color: '#795548'}
 ];
 
-// DOM elements - will be initialized after DOM is ready
-let detailsDisplay, primaryImage, exampleImage, exampleText, numberWordText;
-let gameContainer, starsDisplay, clapSound, feedbackText, abcSong, numSong, playAbcBtn, playNumBtn;
+const detailsDisplay = document.getElementById('details-display');
+const primaryImage = document.getElementById('primary-image');
+const exampleImage = document.getElementById('example-image');
+const exampleText = document.getElementById('example-text');
+const numberWordText = document.getElementById('number-word-text');
 
-// Initialize DOM elements
-function initializeDOMElements() {
-    detailsDisplay = document.getElementById('details-display');
-    primaryImage = document.getElementById('primary-image');
-    exampleImage = document.getElementById('example-image');
-    exampleText = document.getElementById('example-text');
-    numberWordText = document.getElementById('number-word-text');
-
-    gameContainer = document.getElementById('game-container');
-    starsDisplay = document.getElementById('stars-display');
-    clapSound = document.getElementById('clap-sound');
-    feedbackText = document.getElementById('feedback-text');
-    abcSong = document.getElementById('abc-song');
-    numSong = document.getElementById('num-song');
-    playAbcBtn = document.getElementById('play-abc-song-btn');
-    playNumBtn = document.getElementById('play-num-song-btn');
-}
+// Game elements
+const gameContainer = document.getElementById('game-container');
+const starsDisplay = document.getElementById('stars-display');
+const clapSound = document.getElementById('clap-sound');
+const feedbackText = document.getElementById('feedback-text');
+const abcSong = document.getElementById('abc-song');
+const numSong = document.getElementById('num-song');
+const playAbcBtn = document.getElementById('play-abc-song-btn');
+const playNumBtn = document.getElementById('play-num-song-btn');
 
 function createGrid(data, containerId, options = {}) {
     const { isNumbers = false, lang = 'en-US', displayType = 'text' } = options;
@@ -349,13 +343,26 @@ function createGrid(data, containerId, options = {}) {
     });
 }
 
-function speakText(text, lang = 'en-US') {
+function speakText(text, lang = 'en-US', onEndCallback = null) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = lang;
         utterance.rate = 0.85;
         utterance.pitch = 1.2;
+
+        // For Arabic, try to find an Arabic voice
+        if (lang.startsWith('ar')) {
+            const voices = window.speechSynthesis.getVoices();
+            const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
+            if (arabicVoice) {
+                utterance.voice = arabicVoice;
+            }
+        }
+
+        if (onEndCallback) {
+            utterance.onend = onEndCallback;
+        }
 
         window.speechSynthesis.speak(utterance);
     }
@@ -732,55 +739,9 @@ for (const item of alphabetData) {
         seenLetters.add(item.id);
     }
 }
+// Initialize English grids
+createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
+createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
 
-// Initial setup after DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DOM elements
-    initializeDOMElements();
-
-    // Create a unique list for the alphabet learning grid to avoid duplicate letter cards.
-    // The game mode will still use the full 'alphabetData' with all examples.
-    const uniqueAlphabetData = [];
-    const seenLetters = new Set();
-    for (const item of alphabetData) {
-        if (!seenLetters.has(item.id)) {
-            uniqueAlphabetData.push(item);
-            seenLetters.add(item.id);
-        }
-    }
-    // Initialize English grids
-    createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
-    createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
-
-    // Show the ABC song button by default since it's the default view
-    if (playAbcBtn) playAbcBtn.classList.remove('hidden');
-
-    // Add event listeners to navigation buttons to stop speech before switching
-    const navButtons = document.querySelectorAll('.mode-btn:not(.song-btn)');
-    navButtons.forEach(btn => {
-        const originalOnClick = btn.getAttribute('onclick');
-        btn.removeAttribute('onclick');
-        btn.addEventListener('click', () => {
-            stopSpeech();
-            if (originalOnClick) {
-                eval(originalOnClick);
-            }
-        });
-    });
-
-    // Add event listeners to song buttons
-    document.getElementById('play-abc-song-btn').addEventListener('click', () => toggleSong('abc'));
-    document.getElementById('play-num-song-btn').addEventListener('click', () => toggleSong('num'));
-
-    // Add event listeners to mode buttons
-    document.getElementById('abc-mode-btn').addEventListener('click', () => switchMode('abc'));
-    document.getElementById('num-mode-btn').addEventListener('click', () => switchMode('num'));
-    document.getElementById('game-abc-btn').addEventListener('click', () => switchMode('game-abc'));
-    document.getElementById('game-num-btn').addEventListener('click', () => switchMode('game-num'));
-    document.getElementById('game-colors-btn').addEventListener('click', () => switchMode('game-colors'));
-    document.getElementById('arabic-abc-btn').addEventListener('click', () => switchMode('arabic-abc'));
-    document.getElementById('arabic-num-btn').addEventListener('click', () => switchMode('arabic-num'));
-    document.getElementById('shapes-btn').addEventListener('click', () => switchMode('shapes'));
-    document.getElementById('colors-btn').addEventListener('click', () => switchMode('colors'));
-    document.getElementById('writing-test-btn').addEventListener('click', () => switchMode('writing-test'));
-});
+// Show the ABC song button by default since it's the default view
+document.getElementById('play-abc-song-btn').classList.remove('hidden');
