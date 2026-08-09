@@ -44,15 +44,6 @@ window.initializeWritingTest = function() {
         setupCanvasEventListeners();
         updateInstruction();
         
-        // Initialize toggle guide button state after listeners are set up
-        setTimeout(() => {
-            const toggleGuideBtn = document.getElementById('toggle-guide-btn');
-            if (toggleGuideBtn) {
-                toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
-                toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
-            }
-        }, 100);
-        
         console.log('Writing test initialized');
     } else {
         console.error('Canvas element not found');
@@ -283,7 +274,6 @@ function updateInstruction() {
 function nextItem() {
     const items = currentMode === 'letters' ? letters : numbers;
     currentIndex = (currentIndex + 1) % items.length;
-    window.clearCanvas();
     if (feedbackEl) feedbackEl.innerText = '';
     updateInstruction();
 }
@@ -292,7 +282,6 @@ function nextItem() {
 function prevItem() {
     const items = currentMode === 'letters' ? letters : numbers;
     currentIndex = (currentIndex - 1 + items.length) % items.length;
-    window.clearCanvas();
     if (feedbackEl) feedbackEl.innerText = '';
     updateInstruction();
 }
@@ -304,6 +293,13 @@ window.setupButtonListeners = function() {
     const nextBtn = document.getElementById('next-writing-btn');
     const prevBtn = document.getElementById('prev-writing-btn');
     const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+
+    // Initialize toggle guide button state immediately
+    if (toggleGuideBtn) {
+        toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+        toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+        console.log('Guide button initialized:', showGuide);
+    }
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
@@ -317,7 +313,7 @@ window.setupButtonListeners = function() {
         toggleGuideBtn.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
             showGuide = !showGuide;
-            console.log('Guide toggled:', showGuide);
+            console.log('Guide toggled to:', showGuide);
             toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
             toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
             window.clearCanvas(); // Redraw with/without guide
