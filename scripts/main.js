@@ -424,10 +424,16 @@ function switchMode(mode) {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('abc-container').classList.remove('hidden');
         playAbcBtn.classList.remove('hidden');
+        // Re-initialize alphabet grid to ensure images load properly
+        document.getElementById('abc-container').innerHTML = '';
+        createGrid(uniqueAlphabetData, 'abc-container', { isNumbers: false, lang: 'en-US' });
     } else if (mode === 'num') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('num-container').classList.remove('hidden');
         playNumBtn.classList.remove('hidden');
+        // Re-initialize number grid to ensure images load properly
+        document.getElementById('num-container').innerHTML = '';
+        createGrid(numberData, 'num-container', { isNumbers: true, lang: 'en-US' });
     } else if (mode === 'arabic-abc') {
         document.getElementById('learning-main').classList.remove('hidden');
         document.getElementById('arabic-abc-container').classList.remove('hidden');
