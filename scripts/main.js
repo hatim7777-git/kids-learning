@@ -413,7 +413,7 @@ function switchMode(mode) {
     clearQuizTimeouts();
 
     // Hide all containers first
-    ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'shapes-container', 'colors-container', 'game-container', 'details-display', 'learning-main', 'writing-test-panel'].forEach(id => {
+    ['abc-container', 'num-container', 'arabic-abc-container', 'arabic-num-container', 'shapes-container', 'colors-container', 'game-container', 'details-display', 'learning-main', 'writing-test-panel', 'arabic-writing-test-panel'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
     });
 
@@ -452,6 +452,11 @@ function switchMode(mode) {
         }
         if (typeof setupButtonListeners === 'function') {
             setupButtonListeners();
+        }
+    } else if (mode === 'arabic-writing-test') {
+        document.getElementById('arabic-writing-test-panel').classList.remove('hidden');
+        if (typeof initializeArabicWritingTest === 'function') {
+            initializeArabicWritingTest();
         }
     } else if (mode === 'game-abc' || mode === 'game-num' || mode === 'game-colors') {
         const gameType = mode.split('-')[1]; // 'abc', 'num', or 'colors'

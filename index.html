@@ -26,6 +26,7 @@
         <button id="shapes-btn" class="mode-btn" onclick="switchMode('shapes')">🎨 Shapes</button>
         <button id="colors-btn" class="mode-btn" onclick="switchMode('colors')">🌈 Colors</button>
         <button id="writing-test-btn" class="mode-btn" onclick="switchMode('writing-test')">✍️ Writing Test</button>
+        <button id="arabic-writing-test-btn" class="mode-btn" onclick="switchMode('arabic-writing-test')">✍️ Arabic Writing</button>
         <button id="play-abc-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('abc')">Play ABC Song 🎵</button>
         <button id="play-num-song-btn" class="mode-btn song-btn hidden" onclick="toggleSong('num')">Play 123 Song 🎵</button>
     </div>
@@ -76,8 +77,36 @@
         </div>
         <div id="writing-feedback" class="writing-feedback"></div>
         <div class="writing-options">
-            <button class="writing-mode-btn active" data-mode="letters">Letters A-Z</button>
-            <button class="writing-mode-btn" data-mode="numbers">Numbers 0-9</button>
+            <div class="writing-language-group">
+                <h3>English</h3>
+                <button class="writing-mode-btn active" data-lang="en" data-mode="letters">Letters A-Z</button>
+                <button class="writing-mode-btn" data-lang="en" data-mode="numbers">Numbers 0-9</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Arabic Writing Test Panel -->
+    <div id="arabic-writing-test-panel" class="hidden container-fluid">
+        <div class="writing-test-header">
+            <h2 id="arabic-writing-instruction">Write the letter: ا</h2>
+            <div class="writing-controls">
+                <button id="arabic-prev-writing-btn" class="writing-btn">⬅️ Previous</button>
+                <button id="arabic-toggle-guide-btn" class="writing-btn">👁️ Guide</button>
+                <button id="arabic-clear-canvas-btn" class="writing-btn">🗑️ Clear</button>
+                <button id="arabic-check-writing-btn" class="writing-btn">✅ Check</button>
+                <button id="arabic-next-writing-btn" class="writing-btn">➡️ Next</button>
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="arabic-writing-canvas" width="400" height="400"></canvas>
+        </div>
+        <div id="arabic-writing-feedback" class="writing-feedback"></div>
+        <div class="writing-options">
+            <div class="writing-language-group">
+                <h3>Arabic</h3>
+                <button class="arabic-writing-mode-btn active" data-mode="letters">Arabic Letters</button>
+                <button class="arabic-writing-mode-btn" data-mode="numbers">Arabic Numbers</button>
+            </div>
         </div>
     </div>
 
@@ -94,5 +123,6 @@
     <script src="scripts/shapes-main.js"></script>
     <script src="scripts/colors-main.js"></script>
     <script src="scripts/writing-test.js"></script>
+    <script src="scripts/arabic-writing-test.js"></script>
 </body>
 </html>

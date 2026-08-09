@@ -23,10 +23,10 @@ let instructionEl, feedbackEl;
 document.addEventListener('DOMContentLoaded', function() {
     canvas = document.getElementById('writing-canvas');
     if (canvas) {
+        canvas.willReadFrequently = true;
         ctx = canvas.getContext('2d');
         instructionEl = document.getElementById('writing-instruction');
         feedbackEl = document.getElementById('writing-feedback');
-        // Don't initialize yet - wait for switchMode to call initializeWritingTest
     }
 });
 
@@ -43,8 +43,6 @@ window.initializeWritingTest = function() {
         setupButtonListeners();
         setupCanvasEventListeners();
         updateInstruction();
-        
-        console.log('Writing test initialized');
     } else {
         console.error('Canvas element not found');
     }
@@ -53,7 +51,6 @@ window.initializeWritingTest = function() {
 // Set up canvas event listeners
 function setupCanvasEventListeners() {
     if (!canvas) {
-        console.error('Canvas not found');
         return;
     }
 
@@ -61,6 +58,7 @@ function setupCanvasEventListeners() {
     const newCanvas = canvas.cloneNode(true);
     canvas.parentNode.replaceChild(newCanvas, canvas);
     canvas = newCanvas;
+    canvas.willReadFrequently = true; // Set after cloning
     ctx = canvas.getContext('2d');
 
     // Set drawing properties
@@ -294,50 +292,85 @@ window.setupButtonListeners = function() {
     const prevBtn = document.getElementById('prev-writing-btn');
     const toggleGuideBtn = document.getElementById('toggle-guide-btn');
 
-    // Initialize toggle guide button state immediately
+    // Remove existing event listeners by cloning the button
     if (toggleGuideBtn) {
-        toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
-        toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
-        console.log('Guide button initialized:', showGuide);
+        const newToggleBtn = toggleGuideBtn.cloneNode(true);
+        toggleGuideBtn.parentNode.replaceChild(newToggleBtn, toggleGuideBtn);
+    }
+    if (clearBtn) {
+        const newClearBtn = clearBtn.cloneNode(true);
+        clearBtn.parentNode.replaceChild(newClearBtn, clearBtn);
+    }
+    if (checkBtn) {
+        const newCheckBtn = checkBtn.cloneNode(true);
+        checkBtn.parentNode.replaceChild(newCheckBtn, checkBtn);
+    }
+    if (nextBtn) {
+        const newNextBtn = nextBtn.cloneNode(true);
+        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+    }
+    if (prevBtn) {
+        const newPrevBtn = prevBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
     }
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
+    // Re-get button references after cloning
+    const toggleGuideBtnNew = document.getElementById('toggle-guide-btn');
+    const clearBtnNew = document.getElementById('clear-canvas-btn');
+    const checkBtnNew = document.getElementById('check-writing-btn');
+    const nextBtnNew = document.getElementById('next-writing-btn');
+    const prevBtnNew = document.getElementById('prev-writing-btn');
+
+    // Initialize toggle guide button state
+    if (toggleGuideBtnNew) {
+        toggleGuideBtnNew.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+        toggleGuideBtnNew.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+    }
+
+    if (clearBtnNew) {
+        clearBtnNew.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
             window.clearCanvas();
             if (feedbackEl) feedbackEl.innerText = '';
         });
     }
 
-    if (toggleGuideBtn) {
-        toggleGuideBtn.addEventListener('click', () => {
+    if (toggleGuideBtnNew) {
+        toggleGuideBtnNew.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
             showGuide = !showGuide;
             console.log('Guide toggled to:', showGuide);
-            toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
-            toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+            toggleGuideBtnNew.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+            toggleGuideBtnNew.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
             window.clearCanvas(); // Redraw with/without guide
             if (feedbackEl) feedbackEl.innerText = '';
         });
     }
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
+    if (clearBtnNew) {
+        clearBtnNew.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
-            window.setupCanvas();
+            window.clearCanvas();
             if (feedbackEl) feedbackEl.innerText = '';
         });
     }
 
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
+    if (nextBtnNew) {
+        nextBtnNew.addEventListener('click', () => {
+            stopSpeaking(); // Stop any ongoing speech
+            nextItem();
+        });
+    }
+
+    if (prevBtnNew) {
+        prevBtnNew.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
             prevItem();
         });
     }
 
-    if (checkBtn) {
-        checkBtn.addEventListener('click', async () => {
+    if (checkBtnNew) {
+        checkBtnNew.addEventListener('click', async () => {
             stopSpeaking(); // Stop any ongoing speech
             const hasDrawing = hasContent();
             if (!hasDrawing) {
@@ -385,6 +418,8 @@ window.setupButtonListeners = function() {
                         feedbackEl.style.color = '#FF9800';
                     }
                     speakWritingText('Good try! That looks like a ' + expectedChar);
+                    // Auto-erase canvas on good try too
+                    window.clearCanvas();
                 } else {
                     if (feedbackEl) {
                         feedbackEl.innerHTML = '🤔 Try again! Please write the ' + expectedChar + ' again';
@@ -415,7 +450,16 @@ window.setupButtonListeners = function() {
     // Mode switching
     document.querySelectorAll('.writing-mode-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            stopSpeaking(); // Stop any ongoing speech
+            const lang = e.target.dataset.lang;
+            // If Arabic button is clicked, switch to Arabic writing test
+            if (lang === 'ar') {
+                stopSpeaking();
+                switchMode('arabic-writing-test');
+                return;
+            }
+            
+            // English mode switching
+            stopSpeaking();
             document.querySelectorAll('.writing-mode-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             currentMode = e.target.dataset.mode;
