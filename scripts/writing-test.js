@@ -126,7 +126,10 @@ window.drawGuideCharacter = function(character) {
 
     // Draw the character in light gray as a guide
     ctx.save();
-    ctx.font = 'bold 200px Arial';
+    
+    // Calculate font size based on canvas size for proper scaling
+    const fontSize = Math.min(canvas.width, canvas.height) * 0.5;
+    ctx.font = `bold ${fontSize}px Arial`;
     ctx.fillStyle = '#E0E0E0'; // Light gray
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -213,9 +216,13 @@ function getPosition(e) {
         clientY = e.clientY;
     }
 
+    // Scale coordinates to match internal canvas dimensions
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
     };
 }
 

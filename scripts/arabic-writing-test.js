@@ -76,7 +76,10 @@ window.arabicDrawGuideCharacter = function(character) {
     if (!arabicCtx) return;
 
     arabicCtx.save();
-    arabicCtx.font = 'bold 200px Arial';
+    
+    // Calculate font size based on canvas size for proper scaling
+    const fontSize = Math.min(arabicCanvas.width, arabicCanvas.height) * 0.5;
+    arabicCtx.font = `bold ${fontSize}px Arial`;
     arabicCtx.fillStyle = '#E0E0E0';
     arabicCtx.textAlign = 'center';
     arabicCtx.textBaseline = 'middle';
@@ -113,8 +116,16 @@ function arabicStopDrawing() {
 
 function arabicGetPosition(e) {
     const rect = arabicCanvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    
+    // Scale coordinates to match internal canvas dimensions
+    const scaleX = arabicCanvas.width / rect.width;
+    const scaleY = arabicCanvas.height / rect.height;
+    
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    
     return { x, y };
 }
 

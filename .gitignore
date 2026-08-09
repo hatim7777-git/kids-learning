@@ -16,7 +16,3 @@ clasp.json
 
 # Excel local backups (if you don't want the spreadsheet file in git)
 *.xlsx
-
-version.txt
-deploy.bat
-git_push.bat
