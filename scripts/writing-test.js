@@ -44,12 +44,14 @@ window.initializeWritingTest = function() {
         setupCanvasEventListeners();
         updateInstruction();
         
-        // Initialize toggle guide button state
-        const toggleGuideBtn = document.getElementById('toggle-guide-btn');
-        if (toggleGuideBtn) {
-            toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
-            toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
-        }
+        // Initialize toggle guide button state after listeners are set up
+        setTimeout(() => {
+            const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+            if (toggleGuideBtn) {
+                toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+                toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+            }
+        }, 100);
         
         console.log('Writing test initialized');
     } else {
@@ -281,7 +283,7 @@ function updateInstruction() {
 function nextItem() {
     const items = currentMode === 'letters' ? letters : numbers;
     currentIndex = (currentIndex + 1) % items.length;
-    window.setupCanvas();
+    window.clearCanvas();
     if (feedbackEl) feedbackEl.innerText = '';
     updateInstruction();
 }
@@ -290,7 +292,7 @@ function nextItem() {
 function prevItem() {
     const items = currentMode === 'letters' ? letters : numbers;
     currentIndex = (currentIndex - 1 + items.length) % items.length;
-    window.setupCanvas();
+    window.clearCanvas();
     if (feedbackEl) feedbackEl.innerText = '';
     updateInstruction();
 }
@@ -315,6 +317,7 @@ window.setupButtonListeners = function() {
         toggleGuideBtn.addEventListener('click', () => {
             stopSpeaking(); // Stop any ongoing speech
             showGuide = !showGuide;
+            console.log('Guide toggled:', showGuide);
             toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
             toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
             window.clearCanvas(); // Redraw with/without guide
