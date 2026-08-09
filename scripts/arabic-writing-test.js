@@ -43,16 +43,12 @@ window.initializeArabicWritingTest = function() {
 // Canvas setup
 window.arabicSetupCanvas = function() {
     if (!arabicCtx) return;
-    // Set willReadFrequently for better performance
-    if (arabicCanvas) {
-        arabicCanvas.willReadFrequently = true;
-    }
     if (!arabicShowGuide) {
         arabicCtx.fillStyle = 'white';
         arabicCtx.fillRect(0, 0, arabicCanvas.width, arabicCanvas.height);
     }
     arabicCtx.strokeStyle = 'black';
-    arabicCtx.lineWidth = 8; // Increased for Arabic
+    arabicCtx.lineWidth = 8; // Always 8 for Arabic (both letters and numbers)
     arabicCtx.lineCap = 'round';
     arabicCtx.lineJoin = 'round';
     
@@ -344,6 +340,12 @@ window.arabicSetupCanvasEventListeners = function() {
     arabicCanvas = newCanvas;
     arabicCanvas.willReadFrequently = true; // Set after cloning
     arabicCtx = arabicCanvas.getContext('2d');
+
+    // Set drawing properties immediately after getting context
+    arabicCtx.strokeStyle = 'black';
+    arabicCtx.lineWidth = 8; // Always 8 for Arabic
+    arabicCtx.lineCap = 'round';
+    arabicCtx.lineJoin = 'round';
 
     arabicCanvas.addEventListener('mousedown', arabicStartDrawing);
     arabicCanvas.addEventListener('mousemove', arabicDraw);
