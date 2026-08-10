@@ -237,8 +237,6 @@ function createGrid(data, containerId, options = {}) {
                     const itemIndex = parseInt(card.dataset.exampleIndex);
                     const currentItem = relatedItems[itemIndex];
 
-                    primaryImage.classList.remove('hidden');
-                    primaryImage.src = currentItem.image || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
                     numberWordText.innerText = currentItem.word;
                     textToSpeak = currentItem.word;
 
@@ -246,6 +244,14 @@ function createGrid(data, containerId, options = {}) {
                         exampleText.classList.remove('hidden');
                         exampleText.classList.add('large-emoji');
                         exampleText.innerText = currentItem.emoji;
+                        
+                        // Only show image if it exists
+                        if (currentItem.image) {
+                            primaryImage.classList.remove('hidden');
+                            primaryImage.src = currentItem.image;
+                        } else {
+                            primaryImage.classList.add('hidden');
+                        }
                     }
                 }
 

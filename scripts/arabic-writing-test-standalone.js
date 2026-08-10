@@ -104,8 +104,15 @@ function arabicStopDrawing() {
 
 function arabicGetPosition(e) {
     const rect = arabicCanvas.getBoundingClientRect();
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
+    let clientX, clientY;
+    
+    if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
     
     const scaleX = arabicCanvas.width / rect.width;
     const scaleY = arabicCanvas.height / rect.height;

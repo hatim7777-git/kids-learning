@@ -41,6 +41,10 @@
             justify-content: center;
             min-height: 150px;
         }
+        .nav-card:focus {
+            outline: 3px solid #00BCD4;
+            outline-offset: 2px;
+        }
         .nav-card:hover {
             transform: scale(1.05);
         }
@@ -73,7 +77,7 @@
             background-color: #3F51B5;
         }
         .nav-card-colors {
-            background-color: #E91E63;
+            background-color: #C2185B;
         }
         .nav-card-writing {
             background-color: #009688;
@@ -93,11 +97,11 @@
         <div class="category-section">
             <h2 class="category-title">🔤 English Learning</h2>
             <div class="nav-cards">
-                <a href="abc.html" class="nav-card nav-card-english">
+                <a href="abc.html" class="nav-card nav-card-english" role="button" aria-label="Learn English ABCs">
                     <div class="nav-card-icon">🔤</div>
                     <div class="nav-card-title">ABCs</div>
                 </a>
-                <a href="numbers.html" class="nav-card nav-card-numbers">
+                <a href="numbers.html" class="nav-card nav-card-numbers" role="button" aria-label="Learn English numbers">
                     <div class="nav-card-icon">🔢</div>
                     <div class="nav-card-title">123s</div>
                 </a>
@@ -108,15 +112,15 @@
         <div class="category-section">
             <h2 class="category-title">🎮 Quiz Games</h2>
             <div class="nav-cards">
-                <a href="alphabet-quiz.html" class="nav-card nav-card-games">
+                <a href="alphabet-quiz.html" class="nav-card nav-card-games" role="button" aria-label="Play alphabet quiz">
                     <div class="nav-card-icon">🔤</div>
                     <div class="nav-card-title">Alphabet Quiz</div>
                 </a>
-                <a href="number-quiz.html" class="nav-card nav-card-games">
+                <a href="number-quiz.html" class="nav-card nav-card-games" role="button" aria-label="Play number quiz">
                     <div class="nav-card-icon">🔢</div>
                     <div class="nav-card-title">Number Quiz</div>
                 </a>
-                <a href="color-quiz.html" class="nav-card nav-card-games">
+                <a href="color-quiz.html" class="nav-card nav-card-games" role="button" aria-label="Play color quiz">
                     <div class="nav-card-icon">🌈</div>
                     <div class="nav-card-title">Color Quiz</div>
                 </a>
@@ -127,11 +131,11 @@
         <div class="category-section">
             <h2 class="category-title">🔠 Arabic Learning</h2>
             <div class="nav-cards">
-                <a href="arabic-abc.html" class="nav-card nav-card-arabic">
+                <a href="arabic-abc.html" class="nav-card nav-card-arabic" role="button" aria-label="Learn Arabic ABCs">
                     <div class="nav-card-icon">🔠</div>
                     <div class="nav-card-title">Arabic ABCs</div>
                 </a>
-                <a href="arabic-numbers.html" class="nav-card nav-card-arabic">
+                <a href="arabic-numbers.html" class="nav-card nav-card-arabic" role="button" aria-label="Learn Arabic numbers">
                     <div class="nav-card-icon">١٢٣</div>
                     <div class="nav-card-title">Arabic 123s</div>
                 </a>
@@ -142,11 +146,11 @@
         <div class="category-section">
             <h2 class="category-title">🎨 Shapes & Colors</h2>
             <div class="nav-cards">
-                <a href="shapes.html" class="nav-card nav-card-shapes">
+                <a href="shapes.html" class="nav-card nav-card-shapes" role="button" aria-label="Learn shapes">
                     <div class="nav-card-icon">🎨</div>
                     <div class="nav-card-title">Shapes</div>
                 </a>
-                <a href="colors.html" class="nav-card nav-card-colors">
+                <a href="colors.html" class="nav-card nav-card-colors" role="button" aria-label="Learn colors">
                     <div class="nav-card-icon">🌈</div>
                     <div class="nav-card-title">Colors</div>
                 </a>
@@ -157,11 +161,11 @@
         <div class="category-section">
             <h2 class="category-title">✍️ Writing Practice</h2>
             <div class="nav-cards">
-                <a href="writing-test.html" class="nav-card nav-card-writing">
+                <a href="writing-test.html" class="nav-card nav-card-writing" role="button" aria-label="Practice English writing">
                     <div class="nav-card-icon">✍️</div>
                     <div class="nav-card-title">English Writing</div>
                 </a>
-                <a href="arabic-writing-test.html" class="nav-card nav-card-writing">
+                <a href="arabic-writing-test.html" class="nav-card nav-card-writing" role="button" aria-label="Practice Arabic writing">
                     <div class="nav-card-icon">✍️</div>
                     <div class="nav-card-title">Arabic Writing</div>
                 </a>

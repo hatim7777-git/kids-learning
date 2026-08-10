@@ -24,76 +24,31 @@ const numSong = document.getElementById('num-song');
 const playNumBtn = document.getElementById('play-num-song-btn');
 
 function createGrid(data, containerId, options = {}) {
-    const { isNumbers = false, lang = 'en-US', displayType = 'text' } = options;
+    const { isNumbers = true, lang = 'en-US', displayType = 'text' } = options;
     const container = document.getElementById(containerId);
     container.innerHTML = '';
 
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card';
-        if (lang.startsWith('ar')) {
-            card.classList.add('arabic-card');
-        }
-        card.style.borderTop = `8px solid ${item.color}`;
-        card.dataset.exampleIndex = 0; 
+        card.style.borderTop = `8px solid ${item.color}`; 
         
-        if (displayType === 'image') {
-            const imgEl = document.createElement('img');
-            imgEl.src = item.image;
-            imgEl.alt = item.word;
-            imgEl.className = 'card-image';
-            card.appendChild(imgEl);
-        } else if (displayType === 'color') {
-            const colorSwatch = document.createElement('div');
-            colorSwatch.className = 'color-swatch';
-            colorSwatch.style.backgroundColor = item.color;
-            card.appendChild(colorSwatch);
-
-            const charEl = document.createElement('p');
-            charEl.className = 'char';
-            const lightColors = ['#FFFFFF', '#FFFF00', '#FFC0CB', '#ADD8E6', '#90EE90', '#FFD700', '#A9A9A9', '#EE82EE', '#00FF00', '#00FFFF', '#FF00FF'];
-            if (lightColors.includes(item.color)) {
-                charEl.style.color = '#333';
-            } else {
-                charEl.style.color = item.color;
-            }
-            charEl.innerText = item.word;
-            card.appendChild(charEl);
-        } else {
-            const charEl = document.createElement('p');
-            charEl.className = 'char';
-            charEl.style.color = item.color;
-            charEl.lang = lang;
-            charEl.innerText = item.id;
-            card.appendChild(charEl);
-        }
+        const charEl = document.createElement('p');
+        charEl.className = 'char';
+        charEl.style.color = item.color;
+        charEl.lang = lang;
+        charEl.innerText = item.id;
+        card.appendChild(charEl);
 
         card.addEventListener('click', function() {
             let textToSpeak = '';
             
-            if (isNumbers) {
-                detailsDisplay.classList.remove('hidden');
-                primaryImage.src = item.fingerImg;
-                exampleImage.src = item.examples[0].image;
-                exampleText.innerText = item.examples[0].text;
-                numberWordText.innerText = item.word;
-                textToSpeak = item.word;
-            } else {
-                if (displayType === 'color') {
-                    textToSpeak = item.word;
-                } else {
-                    detailsDisplay.classList.remove('hidden');
-                    primaryImage.src = item.image || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-                    numberWordText.innerText = item.word;
-                    textToSpeak = item.word;
-
-                    if (item.emoji) {
-                        exampleText.classList.remove('hidden');
-                        exampleText.classList.add('large-emoji');
-                        exampleText.innerText = item.emoji;
-                    }
-                }
-            }
+            detailsDisplay.classList.remove('hidden');
+            primaryImage.src = item.fingerImg;
+            exampleImage.src = item.examples[0].image;
+            exampleText.innerText = item.examples[0].text;
+            numberWordText.innerText = item.word;
+            textToSpeak = item.word;
 
             speakText(textToSpeak, lang);
         });

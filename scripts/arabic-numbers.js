@@ -27,8 +27,7 @@ function createGrid(data, containerId, options = {}) {
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card arabic-card';
-        card.style.borderTop = `8px solid ${item.color}`;
-        card.dataset.exampleIndex = 0; 
+        card.style.borderTop = `8px solid ${item.color}`; 
         
         const charEl = document.createElement('p');
         charEl.className = 'char';

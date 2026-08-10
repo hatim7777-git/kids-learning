@@ -12,17 +12,17 @@
         <h1>🔤 Let's Learn ABCs! 🔤</h1>
     </header>
 
-    <div class="nav-buttons">
-        <a href="index.html" class="mode-btn">🏠 Home</a>
-        <button id="play-abc-song-btn" class="mode-btn song-btn">Play ABC Song 🎵</button>
-    </div>
+    <nav class="nav-buttons" aria-label="Navigation">
+        <a href="index.html" class="mode-btn" aria-label="Go to home page">🏠 Home</a>
+        <button id="play-abc-song-btn" class="mode-btn song-btn" aria-label="Play ABC song">Play ABC Song 🎵</button>
+    </nav>
 
     <!-- Active Detail Panel -->
     <div id="details-display" class="hidden container-fluid">
-        <img id="primary-image" src="" alt="Detail view">
+        <img id="primary-image" src="" alt="">
         <div class="example-display">
             <p id="number-word-text" class="m-0"></p>
-            <img id="example-image" src="" alt="Example visualization">
+            <img id="example-image" src="" alt="">
             <p id="example-text" class="m-0"></p>
         </div>
     </div>
