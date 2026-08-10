@@ -376,10 +376,12 @@ async function checkWriting() {
                 feedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
                 feedbackEl.style.color = '#4CAF50';
                 speakWritingText(`Correct! You wrote ${currentItem}`);
+                clearCanvas(); // Clear canvas after correct answer
             } else {
                 feedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
                 feedbackEl.style.color = '#F44336';
                 speakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
+                clearCanvas(); // Clear canvas after wrong answer for retry
             }
         }
     } catch (error) {

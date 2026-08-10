@@ -335,10 +335,12 @@ async function arabicCheckWriting() {
                 arabicFeedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
                 arabicFeedbackEl.style.color = '#4CAF50';
                 arabicSpeakWritingText(`Correct! You wrote ${currentItem}`);
+                arabicClearCanvas(); // Clear canvas after correct answer
             } else {
                 arabicFeedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
                 arabicFeedbackEl.style.color = '#F44336';
                 arabicSpeakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
+                arabicClearCanvas(); // Clear canvas after wrong answer for retry
             }
         }
     } catch (error) {

@@ -173,8 +173,13 @@
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 20px; margin-top: 40px;">
-        <a href="index.html" style="color: #333; text-decoration: none; font-size: 1.2rem;">🏠 Back to Home</a>
+    <footer>
+        <p>&copy; <span id="current-year"></span> Fun Learning for Kids. All rights reserved.</p>
+        <p>Made with ❤️ for kids everywhere</p>
     </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>

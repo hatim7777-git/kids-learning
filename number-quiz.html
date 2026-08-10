@@ -12,9 +12,55 @@
         <h1>🔢 Number Quiz 🔢</h1>
     </header>
 
-    <div class="nav-buttons">
-        <a href="index.html" class="mode-btn">🏠 Home</a>
-    </div>
+    <nav class="main-nav" aria-label="Main navigation">
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🔤 English <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="abc.html" class="nav-dropdown-item">ABCs</a>
+                <a href="numbers.html" class="nav-dropdown-item">123s</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🎮 Games <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="alphabet-quiz.html" class="nav-dropdown-item">Alphabet Quiz</a>
+                <a href="number-quiz.html" class="nav-dropdown-item">Number Quiz</a>
+                <a href="color-quiz.html" class="nav-dropdown-item">Color Quiz</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🔠 Arabic <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="arabic-abc.html" class="nav-dropdown-item">Arabic ABCs</a>
+                <a href="arabic-numbers.html" class="nav-dropdown-item">Arabic 123s</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🎨 Shapes & Colors <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="shapes.html" class="nav-dropdown-item">Shapes</a>
+                <a href="colors.html" class="nav-dropdown-item">Colors</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                ✍️ Writing <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="writing-test.html" class="nav-dropdown-item">English Writing</a>
+                <a href="arabic-writing-test.html" class="nav-dropdown-item">Arabic Writing</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-home-btn" aria-label="Go to home page">🏠 Home</a>
+    </nav>
 
     <!-- Game Panel -->
     <div id="game-container" class="container-fluid">
@@ -29,6 +75,14 @@
     <!-- Audio for Game -->
     <audio id="clap-sound" src="audio/clap.mp3"></audio>
 
+    <footer>
+        <p>&copy; <span id="current-year"></span> Fun Learning for Kids. All rights reserved.</p>
+        <p>Made with ❤️ for kids everywhere</p>
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
     <script src="scripts/number-quiz.js"></script>
 </body>
 </html>
