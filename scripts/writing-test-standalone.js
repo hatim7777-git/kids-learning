@@ -1,4 +1,4 @@
-// Writing Test - Canvas Drawing with OCR Recognition
+// Writing Test - Canvas Drawing with OCR Recognition (Standalone Version)
 
 // Canvas and context
 let canvas, ctx;
@@ -9,8 +9,8 @@ let lastY = 0;
 // Current mode and character
 let currentMode = 'letters'; // 'letters' or 'numbers'
 let currentIndex = 0;
-let isSpeaking = false; // Track if currently speaking
-let showGuide = true; // Track if guide character is visible
+let isSpeaking = false;
+let showGuide = true;
 
 // Data for characters
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -27,26 +27,13 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx = canvas.getContext('2d');
         instructionEl = document.getElementById('writing-instruction');
         feedbackEl = document.getElementById('writing-feedback');
-    }
-});
-
-// Initialize function called when switching to writing test mode
-window.initializeWritingTest = function() {
-    // Stop any ongoing speech
-    stopSpeaking();
-
-    // Re-get canvas reference in case it was cloned
-    canvas = document.getElementById('writing-canvas');
-    if (canvas) {
-        ctx = canvas.getContext('2d');
+        
         setupCanvas();
         setupButtonListeners();
         setupCanvasEventListeners();
         updateInstruction();
-    } else {
-        console.error('Canvas element not found');
     }
-};
+});
 
 // Set up canvas event listeners
 function setupCanvasEventListeners() {
@@ -58,12 +45,12 @@ function setupCanvasEventListeners() {
     const newCanvas = canvas.cloneNode(true);
     canvas.parentNode.replaceChild(newCanvas, canvas);
     canvas = newCanvas;
-    canvas.willReadFrequently = true; // Set after cloning
+    canvas.willReadFrequently = true;
     ctx = canvas.getContext('2d');
 
     // Set drawing properties
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 5; // Increased line width for better OCR
+    ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
@@ -85,95 +72,82 @@ function setupCanvasEventListeners() {
 }
 
 // Initialize canvas
-window.setupCanvas = function() {
+function setupCanvas() {
     if (!ctx) return;
-    // Only clear the drawing (black lines), not the guide
-    // This allows kids to write over the guide
-    // To completely clear (remove guide), use clearCanvas that will redraw guide
     if (!showGuide) {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
     ctx.strokeStyle = 'black';
-    ctx.lineWidth = 5; // Increased line width for better OCR
+    ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
-    // Redraw guide if it should be visible
     if (showGuide) {
         const items = currentMode === 'letters' ? letters : numbers;
         const currentItem = items[currentIndex];
         drawGuideCharacter(currentItem);
     }
-};
+}
 
 // Clear canvas completely (including guide)
-window.clearCanvas = function() {
+function clearCanvas() {
     if (!ctx) return;
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Redraw guide if it should be visible
     if (showGuide) {
         const items = currentMode === 'letters' ? letters : numbers;
         const currentItem = items[currentIndex];
         drawGuideCharacter(currentItem);
     }
-};
+}
 
 // Pre-draw the character as a guide
-window.drawGuideCharacter = function(character) {
+function drawGuideCharacter(character) {
     if (!ctx) return;
 
-    // Draw the character in light gray as a guide
     ctx.save();
     
-    // Calculate font size based on canvas size for proper scaling
     const fontSize = Math.min(canvas.width, canvas.height) * 0.5;
     ctx.font = `bold ${fontSize}px Arial`;
-    ctx.fillStyle = '#E0E0E0'; // Light gray
+    ctx.fillStyle = '#E0E0E0';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(character, canvas.width / 2, canvas.height / 2);
     ctx.restore();
-};
+}
 
 // Preprocess image for better OCR
-window.preprocessImage = function(imageData) {
+function preprocessImage(imageData) {
     return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             
-            // Resize to optimal size for OCR (100x100)
             tempCanvas.width = 100;
             tempCanvas.height = 100;
             tempCtx.drawImage(img, 0, 0, 100, 100);
             
-            // Get image data
             const imageDataObj = tempCtx.getImageData(0, 0, 100, 100);
             const data = imageDataObj.data;
             
-            // Apply thresholding (convert to black and white)
             for (let i = 0; i < data.length; i += 4) {
                 const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
                 const threshold = 128;
                 const value = avg > threshold ? 255 : 0;
-                data[i] = value;     // R
-                data[i + 1] = value; // G
-                data[i + 2] = value; // B
-                // Alpha stays the same
+                data[i] = value;
+                data[i + 1] = value;
+                data[i + 2] = value;
             }
             
-            // Put processed image data back
             tempCtx.putImageData(imageDataObj, 0, 0);
             
-            // Return as data URL
             resolve(tempCanvas.toDataURL('image/png'));
         };
         img.src = imageData;
     });
-};
+}
 
 // Drawing functions
 function startDrawing(e) {
@@ -182,7 +156,6 @@ function startDrawing(e) {
     lastX = pos.x;
     lastY = pos.y;
 
-    // Stop any ongoing speech when user starts drawing
     stopSpeaking();
 }
 
@@ -216,7 +189,6 @@ function getPosition(e) {
         clientY = e.clientY;
     }
 
-    // Scale coordinates to match internal canvas dimensions
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -231,7 +203,6 @@ function hasContent() {
     if (!ctx) return false;
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < imageData.data.length; i += 4) {
-        // Check if pixel is not white
         if (imageData.data[i] !== 255 || imageData.data[i + 1] !== 255 || imageData.data[i + 2] !== 255) {
             return true;
         }
@@ -239,13 +210,15 @@ function hasContent() {
     return false;
 }
 
-// Speech functions - use the speakText function from main.js
-// This function has been removed to avoid conflict with main.js speakText
-
-// Helper function to speak text with English language for writing test
+// Speech functions
 function speakWritingText(text) {
-    if (typeof speakText === 'function') {
-        speakText(text, 'en-US');
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.2;
+        window.speechSynthesis.speak(utterance);
     }
 }
 
@@ -263,15 +236,12 @@ function updateInstruction() {
     const modeText = currentMode === 'letters' ? 'letter' : 'number';
     if (instructionEl) instructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
 
-    // Clear canvas before drawing new guide
-    window.clearCanvas();
+    clearCanvas();
 
-    // Draw the character as a guide if enabled
     if (showGuide && typeof drawGuideCharacter === 'function') {
         drawGuideCharacter(currentItem);
     }
 
-    // Speak the instruction
     speakWritingText(`Write the ${modeText} ${currentItem}`);
 }
 
@@ -292,7 +262,7 @@ function prevItem() {
 }
 
 // Button functionality
-window.setupButtonListeners = function() {
+function setupButtonListeners() {
     const clearBtn = document.getElementById('clear-canvas-btn');
     const checkBtn = document.getElementById('check-writing-btn');
     const nextBtn = document.getElementById('next-writing-btn');
@@ -335,145 +305,88 @@ window.setupButtonListeners = function() {
     }
 
     if (clearBtnNew) {
-        clearBtnNew.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            window.clearCanvas();
-            if (feedbackEl) feedbackEl.innerText = '';
-        });
+        clearBtnNew.addEventListener('click', clearCanvas);
     }
-
-    if (toggleGuideBtnNew) {
-        toggleGuideBtnNew.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            showGuide = !showGuide;
-            console.log('Guide toggled to:', showGuide);
-            toggleGuideBtnNew.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
-            toggleGuideBtnNew.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
-            window.clearCanvas(); // Redraw with/without guide
-            if (feedbackEl) feedbackEl.innerText = '';
-        });
-    }
-
-    if (clearBtnNew) {
-        clearBtnNew.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            window.clearCanvas();
-            if (feedbackEl) feedbackEl.innerText = '';
-        });
-    }
-
-    if (nextBtnNew) {
-        nextBtnNew.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            nextItem();
-        });
-    }
-
-    if (prevBtnNew) {
-        prevBtnNew.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            prevItem();
-        });
-    }
-
     if (checkBtnNew) {
-        checkBtnNew.addEventListener('click', async () => {
-            stopSpeaking(); // Stop any ongoing speech
-            const hasDrawing = hasContent();
-            if (!hasDrawing) {
-                if (feedbackEl) {
-                    feedbackEl.innerHTML = '❌ Please draw something first!';
-                    feedbackEl.style.color = '#F44336';
-                }
-                return;
-            }
-
-            // Show loading state
-            if (feedbackEl) {
-                feedbackEl.innerHTML = '🔍 Checking your writing...';
-                feedbackEl.style.color = '#FF9800';
-            }
-
-            try {
-                // Convert canvas to image for OCR
-                const imageData = canvas.toDataURL('image/png');
-                
-                // Preprocess image for better OCR accuracy
-                const preprocessedImage = await window.preprocessImage(imageData);
-
-                // Use Tesseract.js to recognize the drawn character
-                const result = await Tesseract.recognize(preprocessedImage, 'eng', {
-                    logger: m => {} // Disable logging
-                });
-
-                const recognizedText = result.data.text.trim().toUpperCase();
-                const items = currentMode === 'letters' ? letters : numbers;
-                const expectedChar = items[currentIndex];
-
-                console.log('Recognized:', recognizedText, 'Expected:', expectedChar);
-
-                // Check if the recognized text matches expected character
-                if (recognizedText === expectedChar) {
-                    if (feedbackEl) {
-                        feedbackEl.innerHTML = '✅ Excellent! That\'s a perfect ' + expectedChar + '!';
-                        feedbackEl.style.color = '#4CAF50';
-                    }
-                    speakWritingText('Great job! That is a perfect ' + expectedChar);
-                } else if (recognizedText.includes(expectedChar) || expectedChar.includes(recognizedText)) {
-                    if (feedbackEl) {
-                        feedbackEl.innerHTML = '👍 Good try! Almost there - that looks like a ' + expectedChar;
-                        feedbackEl.style.color = '#FF9800';
-                    }
-                    speakWritingText('Good try! That looks like a ' + expectedChar);
-                    // Auto-erase canvas on good try too
-                    window.clearCanvas();
-                } else {
-                    if (feedbackEl) {
-                        feedbackEl.innerHTML = '🤔 Try again! Please write the ' + expectedChar + ' again';
-                        feedbackEl.style.color = '#2196F3';
-                    }
-                    speakWritingText('Keep practicing! Try writing the ' + expectedChar + ' again');
-                    // Auto-erase canvas on retry
-                    window.clearCanvas();
-                }
-            } catch (error) {
-                console.error('OCR Error:', error);
-                if (feedbackEl) {
-                    feedbackEl.innerHTML = '✅ Great effort! Keep practicing!';
-                    feedbackEl.style.color = '#4CAF50';
-                }
-                speakWritingText('Great effort! Keep practicing');
-            }
-        });
+        checkBtnNew.addEventListener('click', checkWriting);
+    }
+    if (nextBtnNew) {
+        nextBtnNew.addEventListener('click', nextItem);
+    }
+    if (prevBtnNew) {
+        prevBtnNew.addEventListener('click', prevItem);
+    }
+    if (toggleGuideBtnNew) {
+        toggleGuideBtnNew.addEventListener('click', toggleGuide);
     }
 
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            stopSpeaking(); // Stop any ongoing speech
-            nextItem();
-        });
-    }
-
-    // Mode switching
-    document.querySelectorAll('.writing-mode-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const lang = e.target.dataset.lang;
-            // If Arabic button is clicked, switch to Arabic writing test
-            if (lang === 'ar') {
-                stopSpeaking();
-                switchMode('arabic-writing-test');
-                return;
-            }
+    // Setup mode switching buttons
+    const modeButtons = document.querySelectorAll('.writing-mode-btn');
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const mode = this.dataset.mode;
+            const lang = this.dataset.lang;
             
-            // English mode switching
-            stopSpeaking();
-            document.querySelectorAll('.writing-mode-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentMode = e.target.dataset.mode;
+            // Update active state
+            modeButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Switch mode
+            currentMode = mode;
             currentIndex = 0;
-            window.setupCanvas();
-            updateInstruction();
             if (feedbackEl) feedbackEl.innerText = '';
+            updateInstruction();
         });
     });
-};
+}
+
+function toggleGuide() {
+    showGuide = !showGuide;
+    const toggleGuideBtn = document.getElementById('toggle-guide-btn');
+    
+    if (toggleGuideBtn) {
+        toggleGuideBtn.innerText = showGuide ? '👁️ Guide On' : '👁️ Guide Off';
+        toggleGuideBtn.style.backgroundColor = showGuide ? '#4CAF50' : '#9E9E9E';
+    }
+    
+    clearCanvas();
+}
+
+async function checkWriting() {
+    if (!hasContent()) {
+        if (feedbackEl) feedbackEl.innerText = 'Please write something first!';
+        speakWritingText('Please write something first');
+        return;
+    }
+
+    if (feedbackEl) feedbackEl.innerText = 'Checking...';
+
+    try {
+        const imageData = canvas.toDataURL('image/png');
+        const processedImage = await preprocessImage(imageData);
+        
+        const result = await Tesseract.recognize(processedImage, 'eng');
+        const recognizedText = result.data.text.trim().toUpperCase();
+        
+        const items = currentMode === 'letters' ? letters : numbers;
+        const currentItem = items[currentIndex];
+        
+        if (feedbackEl) {
+            if (recognizedText === currentItem) {
+                feedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
+                feedbackEl.style.color = '#4CAF50';
+                speakWritingText(`Correct! You wrote ${currentItem}`);
+            } else {
+                feedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
+                feedbackEl.style.color = '#F44336';
+                speakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
+            }
+        }
+    } catch (error) {
+        console.error('OCR Error:', error);
+        if (feedbackEl) {
+            feedbackEl.innerText = 'Error checking writing. Please try again.';
+            feedbackEl.style.color = '#F44336';
+        }
+    }
+}

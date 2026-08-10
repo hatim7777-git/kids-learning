@@ -1,5 +1,4 @@
 const arabicAlphabetData = [
-    // Using emojis instead of images. Added English words.
     {id: 'أ', word: 'أسد', emoji: '🦁', englishWord: 'Lion', color: '#FFC107'},
     {id: 'أ', word: 'أرنب', emoji: '🐰', englishWord: 'Rabbit', color: '#FF3D00'},
     {id: 'ب', word: 'بطة', emoji: '🦆', englishWord: 'Duck', color: '#0476D0'},
@@ -13,7 +12,6 @@ const arabicAlphabetData = [
     {id: 'ج', word: 'جزر', emoji: '🥕', englishWord: 'Carrot', color: '#FF5722'},
     {id: 'ح', word: 'حاتم', emoji: '🧔‍♂️', englishWord: 'Hatim', color: '#A1887F'},
     {id: 'ح', word: 'حصان', emoji: '🐴', englishWord: 'Horse', color: '#A1887F'},
-   // {id: 'ح', word: 'حاتم', emoji: '🧔‍♂️', englishWord: 'Hatim', color: '#A1887F', audio: 'audio/hatim.mp3'},
     {id: 'ح', word: 'حوت', emoji: '🐳', englishWord: 'Whale', color: '#03A9F4'},
     {id: 'خ', word: 'خروف', emoji: '🐑', englishWord: 'Sheep', color: '#A1887F'},
     {id: 'خ', word: 'خوخ', emoji: '🍑', englishWord: 'Peach', color: '#FF8A65'},
@@ -71,22 +69,7 @@ const arabicAlphabetData = [
     {id: 'ي', word: 'يا حسين', emoji: 'يا حسين', englishWord: 'Ya Hussain', color: '#F44336'}
 ];
 
-const arabicNumberData = [
-    // Using English examples for now, but with Arabic words and numbers.
-    {id: '٠', word: 'صفر', fingerImg: 'images/F0.png', examples: [{text: '🚫 لا يوجد حلوى', image: 'images/ex0.png'}], color: '#607D8B'},
-    {id: '١', word: 'واحد', fingerImg: 'images/F1.png', examples: [{text: '☀️ شمس واحدة', image: 'images/ex1.png'}], color: '#FF5722'},
-    {id: '٢', word: 'اثنان', fingerImg: 'images/F2.png', examples: [{text: '👀 عينان', image: 'images/ex2.png'}], color: '#2196F3'},
-    {id: '٣', word: 'ثلاثة', fingerImg: 'images/F3.png', examples: [{text: '🚦 ثلاثة أضواء', image: 'images/ex3.png'}], color: '#4CAF50'},
-    {id: '٤', word: 'أربعة', fingerImg: 'images/F4.png', examples: [{text: '🚗 أربع عجلات', image: 'images/ex4.png'}], color: '#FF9800'},
-    {id: '٥', word: 'خمسة', fingerImg: 'images/F5.png', examples: [{text: '🖐️ خمسة أصابع', image: 'images/ex5.png'}], color: '#9C27B0'},
-    {id: '٦', word: 'ستة', fingerImg: 'images/F6.png', examples: [{text: '🐞 ستة أرجل', image: 'images/ex6.png'}], color: '#E91E63'},
-    {id: '٧', word: 'سبعة', fingerImg: 'images/F7.png', examples: [{text: '🌈 سبعة ألوان', image: 'images/ex7.png'}], color: '#FFEB3B'},
-    {id: '٨', word: 'ثمانية', fingerImg: 'images/F8.png', examples: [{text: '🐙 ثمانية أذرع', image: 'images/ex8.png'}], color: '#00BCD4'},
-    {id: '٩', word: 'تسعة', fingerImg: 'images/F9.png', examples: [{text: '🧩 تسعة مربعات', image: 'images/ex9.png'}], color: '#8BC34A'},
-    {id: '١٠', word: 'عشرة', fingerImg: 'images/F10.png', examples: [{text: '👐 عشرة أصابع', image: 'images/ex10.png'}], color: '#795548'}
-];
-
-// Initialize Arabic grids
+// Initialize unique Arabic alphabet data
 const uniqueArabicAlphabetData = [];
 const seenArabicLetters = new Set();
 for (const item of arabicAlphabetData) {
@@ -96,10 +79,89 @@ for (const item of arabicAlphabetData) {
     }
 }
 
-// Initialize Arabic grids after main.js is loaded
-setTimeout(() => {
-    if (typeof createGrid === 'function') {
-        createGrid(uniqueArabicAlphabetData, 'arabic-abc-container', { isNumbers: false, lang: 'ar-SA' });
-        createGrid(arabicNumberData, 'arabic-num-container', { isNumbers: true, lang: 'ar-SA' });
+// DOM elements
+const detailsDisplay = document.getElementById('details-display');
+const primaryImage = document.getElementById('primary-image');
+const exampleImage = document.getElementById('example-image');
+const exampleText = document.getElementById('example-text');
+const numberWordText = document.getElementById('number-word-text');
+
+function createGrid(data, containerId, options = {}) {
+    const { isNumbers = false, lang = 'ar-SA', displayType = 'text' } = options;
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+
+    data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card arabic-card';
+        card.style.borderTop = `8px solid ${item.color}`;
+        card.dataset.exampleIndex = 0; 
+        
+        const charEl = document.createElement('p');
+        charEl.className = 'char';
+        charEl.style.color = item.color;
+        charEl.lang = lang;
+        charEl.innerText = item.id;
+        card.appendChild(charEl);
+
+        card.addEventListener('click', function() {
+            let textToSpeak = '';
+            
+            detailsDisplay.classList.remove('hidden');
+            const relatedItems = arabicAlphabetData.filter(d => d.id === item.id);
+            const itemIndex = parseInt(card.dataset.exampleIndex);
+            const currentItem = relatedItems[itemIndex];
+
+            primaryImage.classList.add('hidden');
+            exampleText.classList.remove('hidden');
+            exampleText.classList.add('large-emoji');
+            exampleText.innerText = currentItem.emoji;
+            numberWordText.innerHTML = `${currentItem.word}<br><span class="english-translation">${currentItem.englishWord}</span>`;
+            textToSpeak = currentItem.word;
+
+            card.dataset.exampleIndex = (itemIndex + 1) % relatedItems.length;
+
+            speakText(textToSpeak, lang);
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function speakText(text, lang = 'ar-SA', onEndCallback = null) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 0.85;
+        utterance.pitch = 1.2;
+
+        if (lang.startsWith('ar')) {
+            const voices = window.speechSynthesis.getVoices();
+            const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
+            if (arabicVoice) {
+                utterance.voice = arabicVoice;
+            }
+        }
+
+        if (onEndCallback) {
+            utterance.onend = onEndCallback;
+        }
+
+        window.speechSynthesis.speak(utterance);
     }
-}, 500);
+}
+
+function stopSpeech() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    createGrid(uniqueArabicAlphabetData, 'arabic-abc-container', { isNumbers: false, lang: 'ar-SA' });
+    
+    // Set RTL direction for Arabic
+    document.getElementById('arabic-abc-container').style.direction = 'rtl';
+});

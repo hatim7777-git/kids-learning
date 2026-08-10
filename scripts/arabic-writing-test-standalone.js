@@ -1,11 +1,11 @@
-// Arabic Writing Test functionality
+// Arabic Writing Test functionality (Standalone Version)
 let arabicCanvas, arabicCtx, arabicInstructionEl, arabicFeedbackEl;
 
 // Arabic data
 const arabicLetters = ['ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'];
 const arabicNumbers = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
-let arabicCurrentMode = 'letters'; // 'letters' or 'numbers'
+let arabicCurrentMode = 'letters';
 let arabicCurrentIndex = 0;
 let arabicIsDrawing = false;
 let arabicLastX = 0;
@@ -21,34 +21,23 @@ document.addEventListener('DOMContentLoaded', function() {
         arabicCtx = arabicCanvas.getContext('2d');
         arabicInstructionEl = document.getElementById('arabic-writing-instruction');
         arabicFeedbackEl = document.getElementById('arabic-writing-feedback');
-    }
-});
-
-// Initialize function called when switching to Arabic writing test mode
-window.initializeArabicWritingTest = function() {
-    stopArabicSpeaking();
-
-    arabicCanvas = document.getElementById('arabic-writing-canvas');
-    if (arabicCanvas) {
-        arabicCtx = arabicCanvas.getContext('2d');
+        
         arabicSetupCanvas();
         arabicSetupButtonListeners();
         arabicSetupCanvasEventListeners();
         arabicUpdateInstruction();
-    } else {
-        console.error('Arabic canvas element not found');
     }
-};
+});
 
 // Canvas setup
-window.arabicSetupCanvas = function() {
+function arabicSetupCanvas() {
     if (!arabicCtx) return;
     if (!arabicShowGuide) {
         arabicCtx.fillStyle = 'white';
         arabicCtx.fillRect(0, 0, arabicCanvas.width, arabicCanvas.height);
     }
     arabicCtx.strokeStyle = 'black';
-    arabicCtx.lineWidth = 8; // Always 8 for Arabic (both letters and numbers)
+    arabicCtx.lineWidth = 8;
     arabicCtx.lineCap = 'round';
     arabicCtx.lineJoin = 'round';
     
@@ -57,10 +46,10 @@ window.arabicSetupCanvas = function() {
         const currentItem = items[arabicCurrentIndex];
         arabicDrawGuideCharacter(currentItem);
     }
-};
+}
 
 // Clear canvas completely (including guide)
-window.arabicClearCanvas = function() {
+function arabicClearCanvas() {
     if (!arabicCtx) return;
     arabicCtx.fillStyle = 'white';
     arabicCtx.fillRect(0, 0, arabicCanvas.width, arabicCanvas.height);
@@ -69,15 +58,14 @@ window.arabicClearCanvas = function() {
         const currentItem = items[arabicCurrentIndex];
         arabicDrawGuideCharacter(currentItem);
     }
-};
+}
 
 // Pre-draw the character as a guide
-window.arabicDrawGuideCharacter = function(character) {
+function arabicDrawGuideCharacter(character) {
     if (!arabicCtx) return;
 
     arabicCtx.save();
     
-    // Calculate font size based on canvas size for proper scaling
     const fontSize = Math.min(arabicCanvas.width, arabicCanvas.height) * 0.5;
     arabicCtx.font = `bold ${fontSize}px Arial`;
     arabicCtx.fillStyle = '#E0E0E0';
@@ -85,7 +73,7 @@ window.arabicDrawGuideCharacter = function(character) {
     arabicCtx.textBaseline = 'middle';
     arabicCtx.fillText(character, arabicCanvas.width / 2, arabicCanvas.height / 2);
     arabicCtx.restore();
-};
+}
 
 // Drawing functions
 function arabicStartDrawing(e) {
@@ -119,7 +107,6 @@ function arabicGetPosition(e) {
     const clientX = e.clientX || e.touches[0].clientX;
     const clientY = e.clientY || e.touches[0].clientY;
     
-    // Scale coordinates to match internal canvas dimensions
     const scaleX = arabicCanvas.width / rect.width;
     const scaleY = arabicCanvas.height / rect.height;
     
@@ -145,8 +132,13 @@ function arabicHasContent() {
 
 // Speech functions - use English speech for instructions
 function arabicSpeakWritingText(text) {
-    if (typeof speakText === 'function') {
-        speakText(text, 'en-US');
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.2;
+        window.speechSynthesis.speak(utterance);
     }
 }
 
@@ -164,7 +156,7 @@ function arabicUpdateInstruction() {
     const modeText = arabicCurrentMode === 'letters' ? 'letter' : 'number';
     if (arabicInstructionEl) arabicInstructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
 
-    window.arabicClearCanvas();
+    arabicClearCanvas();
 
     if (arabicShowGuide && typeof arabicDrawGuideCharacter === 'function') {
         arabicDrawGuideCharacter(currentItem);
@@ -190,7 +182,7 @@ function arabicPrevItem() {
 }
 
 // Button functionality
-window.arabicSetupButtonListeners = function() {
+function arabicSetupButtonListeners() {
     const clearBtn = document.getElementById('arabic-clear-canvas-btn');
     const checkBtn = document.getElementById('arabic-check-writing-btn');
     const nextBtn = document.getElementById('arabic-next-writing-btn');
@@ -233,128 +225,137 @@ window.arabicSetupButtonListeners = function() {
     }
 
     if (clearBtnNew) {
-        clearBtnNew.addEventListener('click', () => {
-            stopArabicSpeaking();
-            window.arabicClearCanvas();
-            if (arabicFeedbackEl) arabicFeedbackEl.innerText = '';
-        });
+        clearBtnNew.addEventListener('click', arabicClearCanvas);
     }
-
-    if (toggleGuideBtnNew) {
-        toggleGuideBtnNew.addEventListener('click', () => {
-            stopArabicSpeaking();
-            arabicShowGuide = !arabicShowGuide;
-            toggleGuideBtnNew.innerText = arabicShowGuide ? '👁️ Guide On' : '👁️ Guide Off';
-            toggleGuideBtnNew.style.backgroundColor = arabicShowGuide ? '#4CAF50' : '#9E9E9E';
-            window.arabicClearCanvas();
-            if (arabicFeedbackEl) arabicFeedbackEl.innerText = '';
-        });
-    }
-
-    if (nextBtnNew) {
-        nextBtnNew.addEventListener('click', () => {
-            stopArabicSpeaking();
-            arabicNextItem();
-        });
-    }
-
-    if (prevBtnNew) {
-        prevBtnNew.addEventListener('click', () => {
-            stopArabicSpeaking();
-            arabicPrevItem();
-        });
-    }
-
     if (checkBtnNew) {
-        checkBtnNew.addEventListener('click', async () => {
-            stopArabicSpeaking();
-            const hasDrawing = arabicHasContent();
-            if (!hasDrawing) {
-                if (arabicFeedbackEl) {
-                    arabicFeedbackEl.innerHTML = '❌ Please draw something first!';
-                    arabicFeedbackEl.style.color = '#F44336';
-                }
-                return;
-            }
-
-            if (arabicFeedbackEl) {
-                arabicFeedbackEl.innerHTML = '🔍 Checking your writing...';
-                arabicFeedbackEl.style.color = '#FF9800';
-            }
-
-            try {
-                const imageData = arabicCanvas.toDataURL('image/png');
-                const preprocessedImage = await window.preprocessImage(imageData);
-
-                const result = await Tesseract.recognize(preprocessedImage, 'ara', {
-                    logger: m => {}
-                });
-
-                const recognizedText = result.data.text.trim();
-                const items = arabicCurrentMode === 'letters' ? arabicLetters : arabicNumbers;
-                const expectedChar = items[arabicCurrentIndex];
-
-                if (recognizedText === expectedChar) {
-                    if (arabicFeedbackEl) {
-                        arabicFeedbackEl.innerHTML = '✅ Excellent! That\'s a perfect ' + expectedChar + '!';
-                        arabicFeedbackEl.style.color = '#4CAF50';
-                    }
-                    arabicSpeakWritingText('Great job! That is a perfect ' + expectedChar);
-                } else if (recognizedText.includes(expectedChar) || expectedChar.includes(recognizedText)) {
-                    if (arabicFeedbackEl) {
-                        arabicFeedbackEl.innerHTML = '👍 Good try! Almost there - that looks like a ' + expectedChar;
-                        arabicFeedbackEl.style.color = '#FF9800';
-                    }
-                    arabicSpeakWritingText('Good try! That looks like a ' + expectedChar);
-                    window.arabicClearCanvas();
-                } else {
-                    if (arabicFeedbackEl) {
-                        arabicFeedbackEl.innerHTML = '🤔 Try again! Please write the ' + expectedChar + ' again';
-                        arabicFeedbackEl.style.color = '#2196F3';
-                    }
-                    arabicSpeakWritingText('Keep practicing! Try writing the ' + expectedChar + ' again');
-                    window.arabicClearCanvas();
-                }
-            } catch (error) {
-                console.error('OCR Error:', error);
-                if (arabicFeedbackEl) {
-                    arabicFeedbackEl.innerHTML = '✅ Great effort! Keep practicing!';
-                    arabicFeedbackEl.style.color = '#4CAF50';
-                }
-                arabicSpeakWritingText('Great effort! Keep practicing');
-            }
-        });
+        checkBtnNew.addEventListener('click', arabicCheckWriting);
+    }
+    if (nextBtnNew) {
+        nextBtnNew.addEventListener('click', arabicNextItem);
+    }
+    if (prevBtnNew) {
+        prevBtnNew.addEventListener('click', arabicPrevItem);
+    }
+    if (toggleGuideBtnNew) {
+        toggleGuideBtnNew.addEventListener('click', arabicToggleGuide);
     }
 
-    // Mode switching
-    document.querySelectorAll('.arabic-writing-mode-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            stopArabicSpeaking();
-            document.querySelectorAll('.arabic-writing-mode-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            arabicCurrentMode = e.target.dataset.mode;
+    // Setup mode switching buttons
+    const modeButtons = document.querySelectorAll('.arabic-writing-mode-btn');
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const mode = this.dataset.mode;
+            
+            // Update active state
+            modeButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Switch mode
+            arabicCurrentMode = mode;
             arabicCurrentIndex = 0;
-            window.arabicSetupCanvas();
-            arabicUpdateInstruction();
             if (arabicFeedbackEl) arabicFeedbackEl.innerText = '';
+            arabicUpdateInstruction();
         });
     });
-};
+}
 
-// Canvas event listeners
-window.arabicSetupCanvasEventListeners = function() {
-    if (!arabicCanvas) return;
+function arabicToggleGuide() {
+    arabicShowGuide = !arabicShowGuide;
+    const toggleGuideBtn = document.getElementById('arabic-toggle-guide-btn');
+    
+    if (toggleGuideBtn) {
+        toggleGuideBtn.innerText = arabicShowGuide ? '👁️ Guide On' : '👁️ Guide Off';
+        toggleGuideBtn.style.backgroundColor = arabicShowGuide ? '#4CAF50' : '#9E9E9E';
+    }
+    
+    arabicClearCanvas();
+}
 
-    // Clone canvas to remove existing listeners
+// Preprocess image for better OCR
+function arabicPreprocessImage(imageData) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            tempCanvas.width = 100;
+            tempCanvas.height = 100;
+            tempCtx.drawImage(img, 0, 0, 100, 100);
+            
+            const imageDataObj = tempCtx.getImageData(0, 0, 100, 100);
+            const data = imageDataObj.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                const threshold = 128;
+                const value = avg > threshold ? 255 : 0;
+                data[i] = value;
+                data[i + 1] = value;
+                data[i + 2] = value;
+            }
+            
+            tempCtx.putImageData(imageDataObj, 0, 0);
+            
+            resolve(tempCanvas.toDataURL('image/png'));
+        };
+        img.src = imageData;
+    });
+}
+
+async function arabicCheckWriting() {
+    if (!arabicHasContent()) {
+        if (arabicFeedbackEl) arabicFeedbackEl.innerText = 'Please write something first!';
+        arabicSpeakWritingText('Please write something first');
+        return;
+    }
+
+    if (arabicFeedbackEl) arabicFeedbackEl.innerText = 'Checking...';
+
+    try {
+        const imageData = arabicCanvas.toDataURL('image/png');
+        const processedImage = await arabicPreprocessImage(imageData);
+        
+        // Use Arabic and English for OCR
+        const result = await Tesseract.recognize(processedImage, 'ara+eng');
+        const recognizedText = result.data.text.trim();
+        
+        const items = arabicCurrentMode === 'letters' ? arabicLetters : arabicNumbers;
+        const currentItem = items[arabicCurrentIndex];
+        
+        if (arabicFeedbackEl) {
+            if (recognizedText.includes(currentItem)) {
+                arabicFeedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
+                arabicFeedbackEl.style.color = '#4CAF50';
+                arabicSpeakWritingText(`Correct! You wrote ${currentItem}`);
+            } else {
+                arabicFeedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
+                arabicFeedbackEl.style.color = '#F44336';
+                arabicSpeakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
+            }
+        }
+    } catch (error) {
+        console.error('OCR Error:', error);
+        if (arabicFeedbackEl) {
+            arabicFeedbackEl.innerText = 'Error checking writing. Please try again.';
+            arabicFeedbackEl.style.color = '#F44336';
+        }
+    }
+}
+
+function arabicSetupCanvasEventListeners() {
+    if (!arabicCanvas) {
+        return;
+    }
+
     const newCanvas = arabicCanvas.cloneNode(true);
     arabicCanvas.parentNode.replaceChild(newCanvas, arabicCanvas);
     arabicCanvas = newCanvas;
-    arabicCanvas.willReadFrequently = true; // Set after cloning
+    arabicCanvas.willReadFrequently = true;
     arabicCtx = arabicCanvas.getContext('2d');
 
-    // Set drawing properties immediately after getting context
     arabicCtx.strokeStyle = 'black';
-    arabicCtx.lineWidth = 8; // Always 8 for Arabic
+    arabicCtx.lineWidth = 8;
     arabicCtx.lineCap = 'round';
     arabicCtx.lineJoin = 'round';
 
@@ -363,7 +364,6 @@ window.arabicSetupCanvasEventListeners = function() {
     arabicCanvas.addEventListener('mouseup', arabicStopDrawing);
     arabicCanvas.addEventListener('mouseout', arabicStopDrawing);
 
-    // Touch events for mobile
     arabicCanvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
         arabicStartDrawing(e);
@@ -373,4 +373,4 @@ window.arabicSetupCanvasEventListeners = function() {
         arabicDraw(e);
     });
     arabicCanvas.addEventListener('touchend', arabicStopDrawing);
-};
+}
