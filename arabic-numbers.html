@@ -73,8 +73,10 @@
         </div>
     </div>
 
-    <main id="learning-main" class="container-fluid mb-4">
-        <div id="arabic-num-container"></div>
+    <main id="learning-main" class="container-fluid mb-4" style="flex: 1;">
+        <div class="container">
+            <div id="arabic-num-container"></div>
+        </div>
     </main>
 
     <footer>
@@ -82,9 +84,7 @@
         <p>Made with ❤️ for kids everywhere</p>
     </footer>
 
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="scripts/common.js"></script>
     <script src="scripts/arabic-numbers.js"></script>
 </body>
 </html>

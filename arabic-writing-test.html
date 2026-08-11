@@ -65,7 +65,7 @@
     </nav>
 
     <!-- Arabic Writing Test Panel -->
-    <div id="arabic-writing-test-panel" class="container-fluid">
+    <div id="arabic-writing-test-panel" class="container-fluid" style="flex: 1;">
         <div class="writing-test-header">
             <h2 id="arabic-writing-instruction">Write the letter: ا</h2>
             <div class="writing-controls">
@@ -80,6 +80,19 @@
             <canvas id="arabic-writing-canvas" width="400" height="400" willreadfrequently="true"></canvas>
         </div>
         <div id="arabic-writing-feedback" class="writing-feedback"></div>
+        <div class="writing-colors">
+            <h3>اختر اللون:</h3>
+            <div class="color-palette">
+                <button class="color-btn active" data-color="black" style="background-color: black;"></button>
+                <button class="color-btn" data-color="#FF5722" style="background-color: #FF5722;"></button>
+                <button class="color-btn" data-color="#2196F3" style="background-color: #2196F3;"></button>
+                <button class="color-btn" data-color="#4CAF50" style="background-color: #4CAF50;"></button>
+                <button class="color-btn" data-color="#FF9800" style="background-color: #FF9800;"></button>
+                <button class="color-btn" data-color="#9C27B0" style="background-color: #9C27B0;"></button>
+                <button class="color-btn" data-color="#E91E63" style="background-color: #E91E63;"></button>
+                <button class="color-btn" data-color="#00BCD4" style="background-color: #00BCD4;"></button>
+            </div>
+        </div>
         <div class="writing-options">
             <div class="writing-language-group">
                 <h3>Arabic</h3>
@@ -94,9 +107,7 @@
         <p>Made with ❤️ for kids everywhere</p>
     </footer>
 
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="scripts/common.js"></script>
     <script src="scripts/arabic-writing-test-standalone.js"></script>
 </body>
 </html>

@@ -1,0 +1,30 @@
+<header>
+    <h1 id="page-title">🎉 Let's Learn! 🎉</h1>
+</header>
+
+<script>
+// Set page title based on current page
+document.addEventListener('DOMContentLoaded', function() {
+    const pageTitle = document.getElementById('page-title');
+    const currentPage = window.location.pathname.split('/').pop();
+    
+    const titles = {
+        'index.html': '🎉 Let\'s Learn! 🎉',
+        'abc.html': '🔤 Let\'s Learn ABCs! 🔤',
+        'numbers.html': '🔢 Let\'s Learn Numbers! 🔢',
+        'arabic-abc.html': '🔠 Let\'s Learn Arabic ABCs! 🔠',
+        'arabic-numbers.html': '١٢٣ Let\'s Learn Arabic Numbers! ١٢٣',
+        'shapes.html': '🎨 Let\'s Learn Shapes! 🎨',
+        'colors.html': '🌈 Let\'s Learn Colors! 🌈',
+        'alphabet-quiz.html': '🔤 Alphabet Quiz 🔤',
+        'number-quiz.html': '🔢 Number Quiz 🔢',
+        'color-quiz.html': '🌈 Color Quiz 🌈',
+        'writing-test.html': '✍️ English Writing Test ✍️',
+        'arabic-writing-test.html': '✍️ Arabic Writing Test ✍️'
+    };
+    
+    if (pageTitle && titles[currentPage]) {
+        pageTitle.textContent = titles[currentPage];
+    }
+});
+</script>

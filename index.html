@@ -8,29 +8,27 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .home-container {
-            max-width: 1200px;
-            margin: 0 auto;
             padding: 20px;
         }
         .category-section {
-            margin-bottom: 40px;
+            margin-bottom: 25px;
         }
         .category-title {
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
         }
         .nav-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             justify-content: center;
         }
         .nav-card {
             background: white;
             border-radius: 20px;
-            padding: 30px 20px;
+            padding: 20px 15px;
             box-shadow: 0 6px 0 #ddd, 0 10px 20px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: transform 0.2s ease;
@@ -39,7 +37,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 150px;
+            min-height: 120px;
         }
         .nav-card:focus {
             outline: 3px solid #00BCD4;
@@ -52,11 +50,11 @@
             transform: scale(0.95);
         }
         .nav-card-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
         }
         .nav-card-title {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #333;
             text-align: center;
@@ -92,7 +90,57 @@
         <h1>🎉 Let's Learn! 🎉</h1>
     </header>
 
-    <div class="home-container">
+    <nav class="main-nav" aria-label="Main navigation">
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🔤 English <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="abc.html" class="nav-dropdown-item">ABCs</a>
+                <a href="numbers.html" class="nav-dropdown-item">123s</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🎮 Games <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="alphabet-quiz.html" class="nav-dropdown-item">Alphabet Quiz</a>
+                <a href="number-quiz.html" class="nav-dropdown-item">Number Quiz</a>
+                <a href="color-quiz.html" class="nav-dropdown-item">Color Quiz</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🔠 Arabic <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="arabic-abc.html" class="nav-dropdown-item">Arabic ABCs</a>
+                <a href="arabic-numbers.html" class="nav-dropdown-item">Arabic 123s</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                🎨 Shapes & Colors <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="shapes.html" class="nav-dropdown-item">Shapes</a>
+                <a href="colors.html" class="nav-dropdown-item">Colors</a>
+            </div>
+        </div>
+        <div class="nav-dropdown">
+            <button class="nav-dropdown-btn" aria-expanded="false" aria-haspopup="true">
+                ✍️ Writing <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="nav-dropdown-content">
+                <a href="writing-test.html" class="nav-dropdown-item">English Writing</a>
+                <a href="arabic-writing-test.html" class="nav-dropdown-item">Arabic Writing</a>
+            </div>
+        </div>
+        <a href="index.html" class="nav-home-btn" aria-label="Go to home page">🏠 Home</a>
+    </nav>
+
+    <div class="home-container container-fluid" style="flex: 1;">
         <!-- English Learning -->
         <div class="category-section">
             <h2 class="category-title">🔤 English Learning</h2>
@@ -178,8 +226,6 @@
         <p>Made with ❤️ for kids everywhere</p>
     </footer>
 
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="scripts/common.js"></script>
 </body>
 </html>

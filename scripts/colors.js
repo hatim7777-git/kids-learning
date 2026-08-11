@@ -49,33 +49,29 @@ function createGrid(data, containerId, options = {}) {
 
         card.addEventListener('click', function() {
             speakText(item.word, lang);
+            
+            // Show color and text in details display
+            const detailsDisplay = document.getElementById('details-display');
+            const numberWordText = document.getElementById('number-word-text');
+            const primaryImage = document.getElementById('primary-image');
+            const exampleText = document.getElementById('example-text');
+            
+            if (detailsDisplay && numberWordText) {
+                detailsDisplay.classList.remove('hidden');
+                numberWordText.innerText = item.word;
+                numberWordText.style.color = item.color;
+                
+                // Hide other elements
+                if (primaryImage) primaryImage.classList.add('hidden');
+                if (exampleText) exampleText.classList.add('hidden');
+            }
         });
 
         container.appendChild(card);
     });
 }
 
-function speakText(text, lang = 'en-US', onEndCallback = null) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1.2;
-
-        if (onEndCallback) {
-            utterance.onend = onEndCallback;
-        }
-
-        window.speechSynthesis.speak(utterance);
-    }
-}
-
-function stopSpeech() {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
-}
+// Use speakText from common.js
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {

@@ -23,6 +23,6 @@
 
 #arabic-num-container {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* Reduced from 11 to 6 for better image display */
+    grid-template-columns: repeat(11, 1fr);
     gap: 15px;
 }

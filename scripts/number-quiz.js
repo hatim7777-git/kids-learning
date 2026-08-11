@@ -24,34 +24,10 @@ const optionsArea = document.getElementById('options-area');
 let currentCorrectAnswerId = '';
 let currentQuestionSpeech = '';
 let currentCorrectWord = '';
-let quizTimeouts = [];
 
-function createTrackedTimeout(callback, delay) {
-    const timeoutId = setTimeout(callback, delay);
-    quizTimeouts.push(timeoutId);
-    return timeoutId;
-}
-
-function clearQuizTimeouts() {
-    quizTimeouts.forEach(id => clearTimeout(id));
-    quizTimeouts = [];
-}
-
-function speakText(text, lang = 'en-US', onEndCallback = null) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1.2;
-
-        if (onEndCallback) {
-            utterance.onend = onEndCallback;
-        }
-
-        window.speechSynthesis.speak(utterance);
-    }
-}
+// Use common functions from common.js
+// createTrackedTimeout, clearTrackedTimeouts, speakText, stopSpeech
+let currentNumberIndex = 0;
 
 function startGame() {
     starsDisplay.innerText = '';
@@ -70,12 +46,16 @@ function generateNumberQuestion() {
     // Get 4 unique numbers for options
     const maxNumberForQuiz = 5;
     const filteredNumberData = numberData.filter(item => parseInt(item.id) <= maxNumberForQuiz);
-    let shuffledData = [...filteredNumberData].sort(() => 0.5 - Math.random());
-    const questionOptions = shuffledData.slice(0, 4);
-    const correctAnswer = questionOptions[0];
+    
+    // Cycle through numbers systematically
+    const correctAnswer = filteredNumberData[currentNumberIndex];
     currentCorrectAnswerId = correctAnswer.id;
     currentCorrectWord = correctAnswer.word;
-
+    
+    // Get 3 other unique numbers for options
+    const otherNumbers = filteredNumberData.filter(item => item.id !== correctAnswer.id);
+    const shuffledOtherNumbers = [...otherNumbers].sort(() => 0.5 - Math.random()).slice(0, 3);
+    const questionOptions = [correctAnswer, ...shuffledOtherNumbers];
     const displayOptions = [...questionOptions].sort(() => 0.5 - Math.random());
 
     if (questionType === 0) { // Match number to finger image
@@ -149,24 +129,47 @@ function checkAnswer(event) {
 
         const proceedToNextStep = () => {
             if (starsDisplay.innerText.length >= 10) {
-                feedbackText.innerText = "🎉 Great job! You completed the quiz! 🎉";
-                speakText("Great job! You completed the quiz!");
-                clapSound.play();
+                feedbackText.innerText = "You're a Star! �";
+                speakText("You're a Star!");
                 createTrackedTimeout(() => {
                     starsDisplay.innerText = '';
+                    currentNumberIndex = 0;
                     nextQuestion();
-                }, 3000);
+                }, 2000);
             } else {
+                const maxNumberForQuiz = 5;
+                const filteredNumberData = numberData.filter(item => parseInt(item.id) <= maxNumberForQuiz);
+                currentNumberIndex = (currentNumberIndex + 1) % filteredNumberData.length;
+                feedbackText.innerText = "";
+                questionTextEl.style.fontSize = '2rem';
                 nextQuestion();
             }
         };
 
-        speakText("Correct!", 'en-US', proceedToNextStep);
+        speakText(currentCorrectWord, 'en-US');
+
+        createTrackedTimeout(() => {
+            clapSound.currentTime = 0;
+            clapSound.play();
+
+            createTrackedTimeout(() => {
+                clapSound.pause();
+                createTrackedTimeout(proceedToNextStep, 500);
+            }, 1000);
+        }, 1500);
     } else {
         selectedCard.classList.add('incorrect');
         feedbackText.innerText = "Try again!";
         feedbackText.className = "feedback-incorrect";
-        speakText("Try again!");
+
+        document.querySelectorAll('.option-card').forEach(card => card.removeEventListener('click', checkAnswer));
+
+        createTrackedTimeout(() => {
+            selectedCard.classList.remove('incorrect');
+            feedbackText.innerText = "";
+            document.querySelectorAll('.option-card').forEach(card => card.addEventListener('click', checkAnswer));
+            speakText(currentQuestionSpeech);
+        }, 2000);
     }
 }
 
@@ -177,10 +180,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Cleanup when leaving page
 window.addEventListener('beforeunload', function() {
-    clearQuizTimeouts();
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
-    clapSound.pause();
-    clapSound.currentTime = 0;
+    cleanupQuizPage(clapSound);
 });

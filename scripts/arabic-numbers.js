@@ -53,35 +53,7 @@ function createGrid(data, containerId, options = {}) {
     });
 }
 
-function speakText(text, lang = 'ar-SA', onEndCallback = null) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1.2;
-
-        if (lang.startsWith('ar')) {
-            const voices = window.speechSynthesis.getVoices();
-            const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
-            if (arabicVoice) {
-                utterance.voice = arabicVoice;
-            }
-        }
-
-        if (onEndCallback) {
-            utterance.onend = onEndCallback;
-        }
-
-        window.speechSynthesis.speak(utterance);
-    }
-}
-
-function stopSpeech() {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-    }
-}
+// Use speakText from common.js
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {

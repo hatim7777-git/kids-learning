@@ -12,6 +12,7 @@ let arabicLastX = 0;
 let arabicLastY = 0;
 let arabicIsSpeaking = false;
 let arabicShowGuide = true;
+let arabicCurrentColor = 'black';
 
 // Initialize after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -36,7 +37,7 @@ function arabicSetupCanvas() {
         arabicCtx.fillStyle = 'white';
         arabicCtx.fillRect(0, 0, arabicCanvas.width, arabicCanvas.height);
     }
-    arabicCtx.strokeStyle = 'black';
+    arabicCtx.strokeStyle = arabicCurrentColor;
     arabicCtx.lineWidth = 8;
     arabicCtx.lineCap = 'round';
     arabicCtx.lineJoin = 'round';
@@ -53,6 +54,10 @@ function arabicClearCanvas() {
     if (!arabicCtx) return;
     arabicCtx.fillStyle = 'white';
     arabicCtx.fillRect(0, 0, arabicCanvas.width, arabicCanvas.height);
+    arabicCtx.strokeStyle = arabicCurrentColor;
+    arabicCtx.lineWidth = 8;
+    arabicCtx.lineCap = 'round';
+    arabicCtx.lineJoin = 'round';
     if (arabicShowGuide) {
         const items = arabicCurrentMode === 'letters' ? arabicLetters : arabicNumbers;
         const currentItem = items[arabicCurrentIndex];
@@ -247,6 +252,17 @@ function arabicSetupButtonListeners() {
         toggleGuideBtnNew.addEventListener('click', arabicToggleGuide);
     }
 
+    // Setup color palette buttons
+    const colorButtons = document.querySelectorAll('.color-btn');
+    colorButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            colorButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            arabicCurrentColor = this.dataset.color;
+            arabicCtx.strokeStyle = arabicCurrentColor;
+        });
+    });
+
     // Setup mode switching buttons
     const modeButtons = document.querySelectorAll('.arabic-writing-mode-btn');
     modeButtons.forEach(btn => {
@@ -295,7 +311,7 @@ function arabicPreprocessImage(imageData) {
             
             for (let i = 0; i < data.length; i += 4) {
                 const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                const threshold = 128;
+                const threshold = 200; // Higher threshold to better detect colored strokes
                 const value = avg > threshold ? 255 : 0;
                 data[i] = value;
                 data[i + 1] = value;
@@ -335,12 +351,18 @@ async function arabicCheckWriting() {
                 arabicFeedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
                 arabicFeedbackEl.style.color = '#4CAF50';
                 arabicSpeakWritingText(`Correct! You wrote ${currentItem}`);
-                arabicClearCanvas(); // Clear canvas after correct answer
+                // Clear canvas after 10 seconds if correct
+                setTimeout(() => {
+                    arabicClearCanvas();
+                }, 10000);
             } else {
                 arabicFeedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
                 arabicFeedbackEl.style.color = '#F44336';
                 arabicSpeakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
-                arabicClearCanvas(); // Clear canvas after wrong answer for retry
+                // Clear canvas after 2 seconds if wrong
+                setTimeout(() => {
+                    arabicClearCanvas();
+                }, 2000);
             }
         }
     } catch (error) {
@@ -363,7 +385,7 @@ function arabicSetupCanvasEventListeners() {
     arabicCanvas.willReadFrequently = true;
     arabicCtx = arabicCanvas.getContext('2d');
 
-    arabicCtx.strokeStyle = 'black';
+    arabicCtx.strokeStyle = arabicCurrentColor;
     arabicCtx.lineWidth = 8;
     arabicCtx.lineCap = 'round';
     arabicCtx.lineJoin = 'round';

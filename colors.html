@@ -62,7 +62,17 @@
         <a href="index.html" class="nav-home-btn" aria-label="Go to home page">🏠 Home</a>
     </nav>
 
-    <main id="learning-main" class="container-fluid mb-4">
+    <!-- Active Detail Panel -->
+    <div id="details-display" class="hidden container-fluid">
+        <img id="primary-image" src="" alt="">
+        <div class="example-display">
+            <p id="number-word-text" class="m-0"></p>
+            <img id="example-image" src="" alt="">
+            <p id="example-text" class="m-0"></p>
+        </div>
+    </div>
+
+    <main id="learning-main" class="container-fluid mb-4" style="flex: 1;">
         <div id="colors-container"></div>
     </main>
 
@@ -71,9 +81,7 @@
         <p>Made with ❤️ for kids everywhere</p>
     </footer>
 
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="scripts/common.js"></script>
     <script src="scripts/colors.js"></script>
 </body>
 </html>

@@ -112,10 +112,18 @@ function createGrid(data, containerId, options = {}) {
             const itemIndex = parseInt(card.dataset.exampleIndex);
             const currentItem = relatedItems[itemIndex];
 
+            // Show emoji if available
+            if (currentItem.emoji) {
+                exampleText.classList.remove('hidden');
+                exampleText.classList.add('large-emoji');
+                exampleText.innerText = currentItem.emoji;
+            } else {
+                exampleText.classList.add('hidden');
+            }
+
+            // Arabic doesn't have images, so always hide primary image
             primaryImage.classList.add('hidden');
-            exampleText.classList.remove('hidden');
-            exampleText.classList.add('large-emoji');
-            exampleText.innerText = currentItem.emoji;
+
             numberWordText.innerHTML = `${currentItem.word}<br><span class="english-translation">${currentItem.englishWord}</span>`;
             textToSpeak = currentItem.word;
 
@@ -128,29 +136,7 @@ function createGrid(data, containerId, options = {}) {
     });
 }
 
-function speakText(text, lang = 'ar-SA', onEndCallback = null) {
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.85;
-        utterance.pitch = 1.2;
-
-        if (lang.startsWith('ar')) {
-            const voices = window.speechSynthesis.getVoices();
-            const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
-            if (arabicVoice) {
-                utterance.voice = arabicVoice;
-            }
-        }
-
-        if (onEndCallback) {
-            utterance.onend = onEndCallback;
-        }
-
-        window.speechSynthesis.speak(utterance);
-    }
-}
+// Use speakText from common.js
 
 function stopSpeech() {
     if ('speechSynthesis' in window) {

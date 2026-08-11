@@ -12,6 +12,14 @@ body {
     text-align: center;
     -webkit-user-select: none;
     user-select: none;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Add spacing for pages without details display */
+#learning-main {
+    margin-top: 20px;
 }
 
 header {
@@ -19,6 +27,7 @@ header {
     padding: 15px;
     color: white;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
 h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
@@ -32,10 +41,22 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     justify-content: center;
     gap: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
 .nav-dropdown {
     position: relative;
+}
+
+/* Add invisible padding around dropdown to prevent accidental closing */
+.nav-dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: transparent;
 }
 
 .nav-dropdown-btn {
@@ -83,10 +104,7 @@ h1 { margin: 0; font-size: 2.5rem; text-shadow: 2px 2px #00000022; }
     border-radius: 10px;
     z-index: 1000;
     margin-top: 5px;
-}
-
-.nav-dropdown:hover .nav-dropdown-content {
-    display: block;
+    padding: 5px 0;
 }
 
 .nav-dropdown-item {
@@ -160,8 +178,9 @@ footer {
     background-color: #333;
     color: white;
     padding: 20px;
-    margin-top: 40px;
+    margin-top: auto;
     text-align: center;
+    flex-shrink: 0;
 }
 
 footer a {
@@ -212,12 +231,18 @@ footer a:hover {
 
 #abc-container {
     display: grid;
-    grid-template-columns: repeat(13, 1fr); /* 13 letters per row */
+    grid-template-columns: repeat(13, 1fr);
     gap: 15px;
 }
 .numbers-container {
     display: grid;
-    grid-template-columns: repeat(11, 1fr); /* 11 numbers in one row */
+    grid-template-columns: repeat(11, 1fr);
+    gap: 15px;
+}
+
+#colors-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
 }
 
@@ -300,6 +325,14 @@ footer a:hover {
 
 #details-display img {
     height: 160px;
+    width: 160px;
+    object-fit: contain;
+    border-radius: 15px;
+    flex-shrink: 0;
+}
+
+#details-display img {
+    height: 160px;
     object-fit: contain;
     border-radius: 15px;
 }
@@ -321,7 +354,8 @@ footer a:hover {
     gap: 10px;
     font-size: 1.8rem;
     font-weight: bold;
-    justify-content: center; /* Ensures content is centered vertically */
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .large-emoji {
@@ -338,6 +372,7 @@ footer a:hover {
     background-color: #fff;
     border-radius: 20px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    flex: 1;
 }
 #question-text { font-size: 2rem; margin-bottom: 20px; }
 #options-area {
@@ -522,6 +557,48 @@ footer a:hover {
     justify-content: center;
     gap: 30px;
     flex-wrap: wrap;
+}
+
+.writing-colors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.writing-colors h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.color-palette {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.color-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.color-btn.active {
+    border: 3px solid #333;
+    transform: scale(1.15);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .writing-language-group {

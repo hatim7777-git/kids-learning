@@ -76,8 +76,10 @@
         </div>
     </div>
 
-    <main id="learning-main" class="container-fluid mb-4">
-        <div id="abc-container"></div>
+    <main id="learning-main" class="container-fluid mb-4" style="flex: 1;">
+        <div class="container">
+            <div id="abc-container"></div>
+        </div>
     </main>
 
     <!-- Audio for Songs -->
@@ -88,9 +90,7 @@
         <p>Made with ❤️ for kids everywhere</p>
     </footer>
 
-    <script>
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-    </script>
+    <script src="scripts/common.js"></script>
     <script src="scripts/abc.js"></script>
 </body>
 </html>

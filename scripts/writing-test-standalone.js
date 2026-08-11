@@ -11,6 +11,7 @@ let currentMode = 'letters'; // 'letters' or 'numbers'
 let currentIndex = 0;
 let isSpeaking = false;
 let showGuide = true;
+let currentColor = 'black';
 
 // Data for characters
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -49,7 +50,7 @@ function setupCanvasEventListeners() {
     ctx = canvas.getContext('2d');
 
     // Set drawing properties
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = currentColor;
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -78,7 +79,7 @@ function setupCanvas() {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = currentColor;
     ctx.lineWidth = 5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -95,6 +96,10 @@ function clearCanvas() {
     if (!ctx) return;
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     if (showGuide) {
         const items = currentMode === 'letters' ? letters : numbers;
         const currentItem = items[currentIndex];
@@ -134,7 +139,7 @@ function preprocessImage(imageData) {
             
             for (let i = 0; i < data.length; i += 4) {
                 const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                const threshold = 128;
+                const threshold = 200; // Higher threshold to better detect colored strokes
                 const value = avg > threshold ? 255 : 0;
                 data[i] = value;
                 data[i + 1] = value;
@@ -320,6 +325,17 @@ function setupButtonListeners() {
         toggleGuideBtnNew.addEventListener('click', toggleGuide);
     }
 
+    // Setup color palette buttons
+    const colorButtons = document.querySelectorAll('.color-btn');
+    colorButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            colorButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentColor = this.dataset.color;
+            ctx.strokeStyle = currentColor;
+        });
+    });
+
     // Setup mode switching buttons
     const modeButtons = document.querySelectorAll('.writing-mode-btn');
     modeButtons.forEach(btn => {
@@ -376,12 +392,18 @@ async function checkWriting() {
                 feedbackEl.innerText = `✅ Correct! You wrote ${currentItem}`;
                 feedbackEl.style.color = '#4CAF50';
                 speakWritingText(`Correct! You wrote ${currentItem}`);
-                clearCanvas(); // Clear canvas after correct answer
+                // Clear canvas after 10 seconds if correct
+                setTimeout(() => {
+                    clearCanvas();
+                }, 10000);
             } else {
                 feedbackEl.innerText = `❌ Try again! You wrote ${recognizedText || 'nothing'}`;
                 feedbackEl.style.color = '#F44336';
                 speakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
-                clearCanvas(); // Clear canvas after wrong answer for retry
+                // Clear canvas after 2 seconds if wrong
+                setTimeout(() => {
+                    clearCanvas();
+                }, 2000);
             }
         }
     } catch (error) {
