@@ -12,6 +12,7 @@ let currentIndex = 0;
 let isSpeaking = false;
 let showGuide = true;
 let currentColor = 'black';
+let clearTimeoutId = null;
 
 // Data for characters
 const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -241,6 +242,12 @@ function updateInstruction() {
     const modeText = currentMode === 'letters' ? 'letter' : 'number';
     if (instructionEl) instructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
 
+    // Clear any pending clear canvas timeout
+    if (clearTimeoutId) {
+        clearTimeout(clearTimeoutId);
+        clearTimeoutId = null;
+    }
+
     clearCanvas();
 
     if (showGuide && typeof drawGuideCharacter === 'function') {
@@ -393,7 +400,7 @@ async function checkWriting() {
                 feedbackEl.style.color = '#4CAF50';
                 speakWritingText(`Correct! You wrote ${currentItem}`);
                 // Clear canvas after 10 seconds if correct
-                setTimeout(() => {
+                clearTimeoutId = setTimeout(() => {
                     clearCanvas();
                 }, 10000);
             } else {
@@ -401,7 +408,7 @@ async function checkWriting() {
                 feedbackEl.style.color = '#F44336';
                 speakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
                 // Clear canvas after 2 seconds if wrong
-                setTimeout(() => {
+                clearTimeoutId = setTimeout(() => {
                     clearCanvas();
                 }, 2000);
             }

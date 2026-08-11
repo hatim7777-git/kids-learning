@@ -1,24 +1,24 @@
 const colorsData = [
-    { word: 'Red', color: '#FF0000' },
-    { word: 'Blue', color: '#0000FF' },
-    { word: 'Green', color: '#008000' },
-    { word: 'Yellow', color: '#FFFF00' },
-    { word: 'Orange', color: '#FFA500' },
-    { word: 'Purple', color: '#800080' },
-    { word: 'Pink', color: '#FFC0CB' },
-    { word: 'Brown', color: '#A52A2A' },
-    { word: 'Black', color: '#000000' },
-    { word: 'White', color: '#FFFFFF' },
-    { word: 'Gray', color: '#808080' },
-    { word: 'Cyan', color: '#00FFFF' },
-    { word: 'Magenta', color: '#FF00FF' },
-    { word: 'Lime', color: '#00FF00' },
-    { word: 'Indigo', color: '#4B0082' },
-    { word: 'Violet', color: '#EE82EE' },
-    { word: 'Teal', color: '#008080' },
-    { word: 'Gold', color: '#FFD700' },
-    { word: 'Silver', color: '#C0C0C0' },
-    { word: 'Maroon', color: '#800000' }
+    { word: 'Red', color: '#FF0000', images: ['🍎', '🌹', '🚗'] },
+    { word: 'Blue', color: '#0000FF', images: ['🫐', '🐳', '🌊'] },
+    { word: 'Green', color: '#008000', images: ['🍏', '🌳', '🐸'] },
+    { word: 'Yellow', color: '#FFFF00', images: ['🍌', '🌻', '🍋'] },
+    { word: 'Orange', color: '#FFA500', images: ['🍊', '🥕', '🐯'] },
+    { word: 'Purple', color: '#800080', images: ['🍇', '🍆', '🦄'] },
+    { word: 'Pink', color: '#FFC0CB', images: ['🌸', '🎀', '🐷'] },
+    { word: 'Brown', color: '#A52A2A', images: ['🐻', '🍫', '🥔'] },
+    { word: 'Black', color: '#000000', images: ['🐈', '🧤', '🎹'] },
+    { word: 'White', color: '#FFFFFF', images: ['☁️', '🐑', '🥛'] },
+    { word: 'Gray', color: '#808080', images: ['🐘', '🦉', '🏢'] },
+    { word: 'Cyan', color: '#00FFFF', images: ['🐟', '💎', '🧊'] },
+    { word: 'Magenta', color: '#FF00FF', images: ['🦩', '🌸', '💗'] },
+    { word: 'Lime', color: '#00FF00', images: ['🍋', '🍃', '🥒'] },
+    { word: 'Indigo', color: '#4B0082', images: ['🌙', '👖', '🎨'] },
+    { word: 'Violet', color: '#EE82EE', images: ['🌸', '💜', '🦋'] },
+    { word: 'Teal', color: '#008080', images: ['🦆', '🌿', '🎁'] },
+    { word: 'Gold', color: '#FFD700', images: ['🏆', '💰', '👑'] },
+    { word: 'Silver', color: '#C0C0C0', images: ['🥈', '🥄', '🪙'] },
+    { word: 'Maroon', color: '#800000', images: ['🍇', '🎃', '🪵'] }
 ];
 
 // Game elements
@@ -43,6 +43,7 @@ function startGame() {
 
 function nextQuestion() {
     optionsArea.innerHTML = '';
+    questionTextEl.innerHTML = ''; // Clear any previous emoji
     generateColorQuestion();
 }
 
@@ -53,28 +54,67 @@ function generateColorQuestion() {
     currentCorrectAnswerId = correctAnswer.word;
     currentCorrectWord = correctAnswer.word;
 
-    currentQuestionSpeech = `Find the color ${correctAnswer.word}`;
-    questionTextEl.innerText = currentQuestionSpeech;
+    // Randomly choose question type: 0 = color to image, 1 = image to color
+    const questionType = Math.floor(Math.random() * 2);
 
-    const displayOptions = [...questionOptions].sort(() => 0.5 - Math.random());
+    if (questionType === 0) {
+        // Question: Find the color [color name] - show color swatches
+        currentQuestionSpeech = `Find the color ${correctAnswer.word}`;
+        questionTextEl.innerText = currentQuestionSpeech;
 
-    displayOptions.forEach(option => {
-        const optionCard = document.createElement('div');
-        optionCard.className = 'option-card';
-        optionCard.dataset.id = option.word;
+        const displayOptions = [...questionOptions].sort(() => 0.5 - Math.random());
 
-        const colorPreview = document.createElement('div');
-        colorPreview.style.backgroundColor = option.color;
-        colorPreview.style.width = '80px';
-        colorPreview.style.height = '80px';
-        colorPreview.style.borderRadius = '50%';
-        colorPreview.style.margin = '0 auto';
-        colorPreview.style.border = '3px solid #ddd';
-        optionCard.appendChild(colorPreview);
+        displayOptions.forEach(option => {
+            const optionCard = document.createElement('div');
+            optionCard.className = 'option-card';
+            optionCard.dataset.id = option.word;
 
-        optionCard.addEventListener('click', checkAnswer);
-        optionsArea.appendChild(optionCard);
-    });
+            const colorPreview = document.createElement('div');
+            colorPreview.style.backgroundColor = option.color;
+            colorPreview.style.width = '80px';
+            colorPreview.style.height = '80px';
+            colorPreview.style.borderRadius = '50%';
+            colorPreview.style.margin = '0 auto';
+            colorPreview.style.border = '3px solid #ddd';
+            optionCard.appendChild(colorPreview);
+
+            optionCard.addEventListener('click', checkAnswer);
+            optionsArea.appendChild(optionCard);
+        });
+    } else {
+        // Question: What color is this [emoji]? - show emojis
+        const randomImageIndex = Math.floor(Math.random() * correctAnswer.images.length);
+        const targetImage = correctAnswer.images[randomImageIndex];
+        
+        currentQuestionSpeech = `What color is this?`;
+        questionTextEl.innerText = currentQuestionSpeech;
+
+        // Show the target emoji as the question
+        const questionEmoji = document.createElement('div');
+        questionEmoji.className = 'option-emoji';
+        questionEmoji.innerText = targetImage;
+        questionTextEl.appendChild(questionEmoji);
+
+        const displayOptions = [...questionOptions].sort(() => 0.5 - Math.random());
+
+        displayOptions.forEach(option => {
+            const optionCard = document.createElement('div');
+            optionCard.className = 'option-card';
+            optionCard.dataset.id = option.word;
+
+            const colorPreview = document.createElement('div');
+            colorPreview.style.backgroundColor = option.color;
+            colorPreview.style.width = '80px';
+            colorPreview.style.height = '80px';
+            colorPreview.style.borderRadius = '50%';
+            colorPreview.style.margin = '0 auto';
+            colorPreview.style.border = '3px solid #ddd';
+            optionCard.appendChild(colorPreview);
+
+            optionCard.addEventListener('click', checkAnswer);
+            optionsArea.appendChild(optionCard);
+        });
+    }
 
     speakText(currentQuestionSpeech);
 }
@@ -99,7 +139,7 @@ function checkAnswer(event) {
 
         const proceedToNextStep = () => {
             if (starsDisplay.innerText.length >= 10) {
-                feedbackText.innerText = "You're a Star! �";
+                feedbackText.innerText = "You're a Star! 🌟";
                 speakText("You're a Star!");
                 createTrackedTimeout(() => {
                     starsDisplay.innerText = '';

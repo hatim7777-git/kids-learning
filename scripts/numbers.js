@@ -41,16 +41,13 @@ function createGrid(data, containerId, options = {}) {
         card.appendChild(charEl);
 
         card.addEventListener('click', function() {
-            let textToSpeak = '';
-            
             detailsDisplay.classList.remove('hidden');
             primaryImage.src = item.fingerImg;
             exampleImage.src = item.examples[0].image;
             exampleText.innerText = item.examples[0].text;
             numberWordText.innerText = item.word;
-            textToSpeak = item.word;
 
-            speakText(textToSpeak, lang);
+            speakNumberText(item.word, item.examples[0].text, lang);
         });
 
         container.appendChild(card);

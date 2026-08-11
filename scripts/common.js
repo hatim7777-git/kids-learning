@@ -53,6 +53,83 @@ function speakText(text, lang = 'en-US', onEndCallback = null) {
     }
 }
 
+// Speech synthesis for numbers with pause (number first, then example text without emoji)
+function speakNumberText(numberWord, exampleText, lang = 'en-US', onEndCallback = null) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        // Remove emojis from example text for speech (comprehensive emoji removal)
+        const cleanExampleText = exampleText
+            .replace(/[\u{1F300}-\u{1F9FF}]/gu, '') // Emojis
+            .replace(/[\u{2600}-\u{26FF}]/gu, '') // Miscellaneous symbols (includes sun ☀️)
+            .replace(/[\u{2700}-\u{27BF}]/gu, '') // Dingbats
+            .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // Emoticons
+            .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // Transport and map symbols
+            .replace(/[\u{1F700}-\u{1F77F}]/gu, '') // Alchemical symbols
+            .replace(/[\u{1F780}-\u{1F7FF}]/gu, '') // Geometric shapes
+            .replace(/[\u{1F800}-\u{1F8FF}]/gu, '') // Supplemental arrows
+            .replace(/[\u{1F900}-\u{1F9FF}]/gu, '') // Supplemental symbols
+            .replace(/[\u{1FA00}-\u{1FA6F}]/gu, '') // Chess symbols
+            .replace(/[\u{1FA70}-\u{1FAFF}]/gu, '') // Symbols and pictographs
+            .replace(/[\u{2000}-\u{206F}]/gu, '') // General punctuation
+            .replace(/[\u{FE00}-\u{FE0F}]/gu, '') // Variation selectors
+            .replace(/[\u{FE0E}-\u{FE0F}]/gu, '') // Variation selectors
+            .replace(/[\u{1F020}-\u{1F093}]/gu, '') // Enclosed characters
+            .replace(/[\u{1F1E0}-\u{1F1FF}]/gu, '') // Flags
+            .replace(/[\u{1F10D}-\u{1F10F}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F12F}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F16C}-\u{1F171}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F17E}-\u{1F17F}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F18E}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F191}-\u{1F19A}]/gu, '') // Enclosed alphanumeric
+            .replace(/[\u{1F1AD}-\u{1F1E5}]/gu, '') // Enclosed alphanumeric
+            .trim();
+        
+        // First speak the number word
+        const utterance1 = new SpeechSynthesisUtterance(numberWord);
+        utterance1.lang = lang;
+        utterance1.rate = 0.85;
+        utterance1.pitch = 1.2;
+
+        if (lang.startsWith('ar')) {
+            const voices = window.speechSynthesis.getVoices();
+            const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
+            if (arabicVoice) {
+                utterance1.voice = arabicVoice;
+            }
+        }
+
+        // Then speak the example text after a short pause
+        utterance1.onend = function() {
+            setTimeout(() => {
+                const utterance2 = new SpeechSynthesisUtterance(cleanExampleText);
+                utterance2.lang = lang;
+                utterance2.rate = 0.85;
+                utterance2.pitch = 1.2;
+
+                if (lang.startsWith('ar')) {
+                    const voices = window.speechSynthesis.getVoices();
+                    const arabicVoice = voices.find(voice => voice.lang.startsWith('ar'));
+                    if (arabicVoice) {
+                        utterance2.voice = arabicVoice;
+                    }
+                }
+
+                if (onEndCallback) {
+                    utterance2.onend = onEndCallback;
+                }
+
+                window.speechSynthesis.speak(utterance2);
+            }, 500); // 500ms pause between number and example
+        };
+
+        window.speechSynthesis.speak(utterance1);
+    }
+}
+
+// Make speakNumberText available globally
+window.speakNumberText = speakNumberText;
+
 // Stop speech
 function stopSpeech() {
     if ('speechSynthesis' in window) {

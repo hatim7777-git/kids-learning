@@ -237,10 +237,24 @@ function createGrid(data, containerId, options = {}) {
                     const itemIndex = parseInt(card.dataset.exampleIndex);
                     const currentItem = relatedItems[itemIndex];
 
+                    // Handle primary image - show if exists, hide if not
+                    if (currentItem.image) {
+                        primaryImage.classList.remove('hidden');
+                        primaryImage.src = currentItem.image;
+                        primaryImage.onerror = function() {
+                            this.classList.add('hidden');
+                        };
+                    } else {
+                        primaryImage.classList.add('hidden');
+                    }
+
+                    // Hide example image for alphabet letters (only used for numbers)
+                    exampleImage.classList.add('hidden');
+
                     numberWordText.innerText = currentItem.word;
                     textToSpeak = currentItem.word;
 
-                    // Always show emoji if available
+                    // Handle emoji - show in exampleText
                     if (currentItem.emoji) {
                         exampleText.classList.remove('hidden');
                         exampleText.classList.add('large-emoji');
@@ -248,21 +262,11 @@ function createGrid(data, containerId, options = {}) {
                     } else {
                         exampleText.classList.add('hidden');
                     }
-
-                    // Show image on left side if available, otherwise hide it
-                    if (currentItem.image) {
-                        primaryImage.classList.remove('hidden');
-                        primaryImage.onerror = function() {
-                            this.classList.add('hidden');
-                        };
-                        primaryImage.src = currentItem.image;
-                    } else {
-                        primaryImage.classList.add('hidden');
-                    }
-
-                    // Cycle to next example
-                    card.dataset.exampleIndex = (itemIndex + 1) % relatedItems.length;
                 }
+
+                const relatedItems = alphabetData.filter(d => d.id === item.id);
+                const itemIndex = parseInt(card.dataset.exampleIndex);
+                card.dataset.exampleIndex = (itemIndex + 1) % relatedItems.length;
             }
 
             speakText(textToSpeak, lang);

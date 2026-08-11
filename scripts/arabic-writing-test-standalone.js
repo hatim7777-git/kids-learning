@@ -13,6 +13,7 @@ let arabicLastY = 0;
 let arabicIsSpeaking = false;
 let arabicShowGuide = true;
 let arabicCurrentColor = 'black';
+let arabicClearTimeoutId = null;
 
 // Initialize after DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -167,6 +168,12 @@ function arabicUpdateInstruction() {
     const currentItem = items[arabicCurrentIndex];
     const modeText = arabicCurrentMode === 'letters' ? 'letter' : 'number';
     if (arabicInstructionEl) arabicInstructionEl.innerText = `Write the ${modeText}: ${currentItem}`;
+
+    // Clear any pending clear canvas timeout
+    if (arabicClearTimeoutId) {
+        clearTimeout(arabicClearTimeoutId);
+        arabicClearTimeoutId = null;
+    }
 
     arabicClearCanvas();
 
@@ -352,7 +359,7 @@ async function arabicCheckWriting() {
                 arabicFeedbackEl.style.color = '#4CAF50';
                 arabicSpeakWritingText(`Correct! You wrote ${currentItem}`);
                 // Clear canvas after 10 seconds if correct
-                setTimeout(() => {
+                arabicClearTimeoutId = setTimeout(() => {
                     arabicClearCanvas();
                 }, 10000);
             } else {
@@ -360,7 +367,7 @@ async function arabicCheckWriting() {
                 arabicFeedbackEl.style.color = '#F44336';
                 arabicSpeakWritingText(`Try again! You wrote ${recognizedText || 'nothing'}`);
                 // Clear canvas after 2 seconds if wrong
-                setTimeout(() => {
+                arabicClearTimeoutId = setTimeout(() => {
                     arabicClearCanvas();
                 }, 2000);
             }

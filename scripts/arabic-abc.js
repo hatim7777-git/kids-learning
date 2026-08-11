@@ -112,7 +112,15 @@ function createGrid(data, containerId, options = {}) {
             const itemIndex = parseInt(card.dataset.exampleIndex);
             const currentItem = relatedItems[itemIndex];
 
-            // Show emoji if available
+            // Arabic letters don't have images, so always hide primary image
+            primaryImage.classList.add('hidden');
+            
+            // Hide example image for Arabic letters (only used for numbers)
+            exampleImage.classList.add('hidden');
+
+            numberWordText.innerHTML = `${currentItem.word}<br><span class="english-translation">${currentItem.englishWord}</span>`;
+            textToSpeak = currentItem.word;
+
             if (currentItem.emoji) {
                 exampleText.classList.remove('hidden');
                 exampleText.classList.add('large-emoji');
@@ -120,12 +128,6 @@ function createGrid(data, containerId, options = {}) {
             } else {
                 exampleText.classList.add('hidden');
             }
-
-            // Arabic doesn't have images, so always hide primary image
-            primaryImage.classList.add('hidden');
-
-            numberWordText.innerHTML = `${currentItem.word}<br><span class="english-translation">${currentItem.englishWord}</span>`;
-            textToSpeak = currentItem.word;
 
             card.dataset.exampleIndex = (itemIndex + 1) % relatedItems.length;
 
